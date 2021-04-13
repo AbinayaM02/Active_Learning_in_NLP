@@ -8,44 +8,31 @@ import json
 import argparse
 import ipdb
 
-# annotatation_data = "annotate_data/annotate.csv.gz"
-# data_info = ".data_tracking/data_info.txt"
+
+def clear():
+    if os.name == "nt":
+        _ = os.system("cls")
+    else:
+        _ = os.system("clear")
 
 
-def get_annotate_idx(size=100, type="random"):
-    with open(data_info) as in_file:
-        annotate_idx = json.load(in_file)["annotate_idx"]
-    return np.random.choice(annotate_idx, size=size, replace=False)
-
-
-def random_sampling(
-    raw_data: pd.DataFrame, annotate_data: pd.DataFrame = None, size: int = 1000
-):
-    ipdb.set_trace()
+def random_sampling(raw_data: pd.DataFrame, size: int = 1000):
+    raw_data = raw_data[raw_data["annotated_labels"].isna()].copy()
     all_idx = raw_data["idx"].values.tolist()
-    if annotate_data is not None:
-        annotated_idx = annotate_data["idx"].values.tolist()
-        all_idx = list(set(all_idx) - set(annotated_idx))
     idx = np.random.choice(all_idx, size=size, replace=False)
     return idx
 
 
-def least_confidence_sampling(
-    raw_data: pd.DataFrame, annotate_data: pd.DataFrame = None, size: int = 1000
-):
+def least_confidence_sampling(raw_data: pd.DataFrame, size: int = 1000):
     raw_data = raw_data.copy()
-    if annotate_data is not None:
-        raw_data = raw_data[~(raw_data.idx.isin(annotate_data.idx))]
+    raw_data = raw_data[raw_data["annotated_labels"].isna()].copy()
     raw_data.sort_values("max_prob", inplace=True)
     return raw_data.head(size).idx.values
 
 
-def margin_sampling(
-    raw_data: pd.DataFrame, annotate_data: pd.DataFrame = None, size: int = 1000
-):
-    raw_data = raw_data.copy()
-    if annotate_data is not None:
-        raw_data = raw_data[~(raw_data.idx.isin(annotate_data.idx))]
+def margin_sampling(raw_data: pd.DataFrame, size: int = 1000):
+    raw_data = raw_data[raw_data["annotated_labels"].isna()].copy()
+
     prob_cols = ["prob_0", "prob_1", "prob_2", "prob_3"]
     prob_sorted = np.sort(raw_data[prob_cols], axis=1)
     margin = prob_sorted[:, -1] - prob_sorted[:, -2]
@@ -54,12 +41,8 @@ def margin_sampling(
     return raw_data.head(size).idx.values
 
 
-def entropy_sampling(
-    raw_data: pd.DataFrame, annotate_data: pd.DataFrame = None, size: int = 1000
-):
-    raw_data = raw_data.copy()
-    if annotate_data is not None:
-        raw_data = raw_data[~(raw_data.idx.isin(annotate_data.idx))]
+def entropy_sampling(raw_data: pd.DataFrame, size: int = 1000):
+    raw_data = raw_data[raw_data["annotated_labels"].isna()].copy()
 
     prob_cols = ["prob_0", "prob_1", "prob_2", "prob_3"]
     raw_data["entropy"] = -1 * np.sum(
@@ -100,7 +83,7 @@ def annotation_message():
 
 
 def get_examples(exp_data, label=0):
-    label_data = exp_data[exp_data["label"] == label]
+    label_data = exp_data[exp_data["labels"] == label]
     return label_data.head(1)
 
 
@@ -113,7 +96,7 @@ def get_annotation(data, exp_data):
         "t": "Science/Tech example",
     }
     data.reset_index(drop=True, inplace=True)
-    data["labels"] = -1
+    data["annotated_labels"] = np.nan
     num_ex = data.shape[0]
     print(f"Number of examples to annotate are {num_ex}")
     full_instruction, annotation_instruction = annotation_message()
@@ -122,32 +105,38 @@ def get_annotation(data, exp_data):
     while ind < num_ex:
         if ind < 0:
             ind = 0
-
+        if ind > 0:
+            clear()
         textId = data.loc[ind, "idx"]
         title = data.loc[ind, "title"]
         description = data.loc[ind, "description"]
 
         print(annotation_instruction)
-        print("*" * 80)
+        print("*" * 100)
         print(f"{ind + 1}")
         print(f"Title: {title}")
         print(f"Description: {description}")
         label = str(input("> "))
         if label in ["0", "1", "2", "3", "4"]:
-            data.loc[ind, "labels"] = int(label) - 1
+            data.loc[ind, "annotated_labels"] = int(label) - 1
             ind += 1
         elif label == "b":
-            ind -= 1
+            ind -= 1 if ind > 0 else 0
         elif label in ["w", "s", "b", "t"]:
             exp = get_examples(exp_data, label_map.get(label, 0))
+            print("*" * 100)
             print(label_desc_map.get(label, "w"))
             print(f"\n Title: {exp['Title'].values[0]}")
             print(f"\n Description: {exp['Description'].values[0]}")
+            print("*" * 100)
         elif label == "f":
             print(full_instruction)
         elif label == "save":
             print("saving all data and exiting")
             return data
+    print("-" * 100)
+    print("Done with presentation set of annotation")
+    return data
 
 
 def main():
@@ -165,9 +154,6 @@ def main():
     )
     parser.add_argument("output_location", help="location to write annotated data")
     parser.add_argument(
-        "--annotated_data", help="path to the data which has already been annotated"
-    )
-    parser.add_argument(
         "--example_data", help="data from which we pick example for each class"
     )
     args = parser.parse_args()
@@ -175,16 +161,20 @@ def main():
     sampling_method = args.sampling_method
     sample_size = int(args.sample_size)
     output_location = args.output_location
-    annotated_data_path = args.annotated_data
     example_data_path = args.example_data
     if example_data_path is None:
         example_data_path = "../../data/exp_data.csv.gz"
 
-    annotation_data = pd.read_csv(annotation_data_path, index_col=False)
-    if annotated_data_path is not None:
-        annotated_data = pd.read_csv(annotated_data_path)
-    else:
-        annotated_data = None
+    df_for_annotation = pd.read_csv(annotation_data_path, index_col=False)
+    df_for_annotation["sampling_method"].fillna("", inplace=True)
+    sampling_method_in_data = df_for_annotation.sampling_method.unique()
+    if not (
+        "" in sampling_method_in_data or sampling_method in sampling_method_in_data
+    ):
+        raise ValueError(
+            f"""Warning: data of other sampling {sampling_method_in_data} method is being used, when actual sampling method is {sampling_method}. This might corrupt data"""
+        )
+
     exp_data = pd.read_csv(example_data_path)
     sampling_method_map = {
         "random": random_sampling,
@@ -197,21 +187,30 @@ def main():
             "Sampling method has to be one of `random`, `least`, `margin`, `entropy` "
         )
     sample_idx = sampling_method_map[sampling_method](
-        annotation_data, annotated_data, size=sample_size
+        df_for_annotation, size=sample_size
     )
 
-    data = annotation_data[annotation_data["idx"].isin(sample_idx)]
+    data = df_for_annotation[df_for_annotation["idx"].isin(sample_idx)]
+    reamining_data = df_for_annotation[~(df_for_annotation["idx"].isin(sample_idx))]
 
-    annotated_data_1 = get_annotation(data, exp_data)
+    annotated_data = get_annotation(data, exp_data)
     if not os.path.exists(output_location):
         os.mkdir(
             output_location,
         )
+    annotated_data.loc[
+        ~(annotated_data["annotated_labels"].isna()), "sampling_method"
+    ] = sampling_method
+    tot_annotated = annotated_data[~(annotated_data.annotated_labels.isna())].shape
+    clear()
+    print(f"Total annotation required {sample_size}, total annotated {tot_annotated}")
+    annotated_data = pd.concat((annotated_data, reamining_data), axis=0)
     today = datetime.today().strftime("%Y%m%d")
     out_file = os.path.join(
         output_location, f"annotated_data_{sampling_method}_{today}.csv.gz"
     )
-    annotated_data_1.to_csv(out_file, index=False, compression="gzip")
+    print(f"Writing file to {out_file}")
+    annotated_data.to_csv(out_file, index=False, compression="gzip")
 
 
 if __name__ == "__main__":
