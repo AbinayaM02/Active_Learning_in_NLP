@@ -2,59 +2,160 @@
 """
 Created on Fri Apr  2 14:23:30 2021
 
-Script to train a transformer model on ag_news dataset
+Script to train simpletransformer model
 
 @author: Abinaya Mahendiran
 """
 
 
 # Import necessary libraries
+import torch
 import pandas as pd
-from datasets import load_dataset
 from pathlib import Path
-from config import config
+from simpletransformers.classification ClasificationModel
+from scripts.config import logger
+from scripts import utils, config
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
 
-# Load data and convert it to dataframe
-def load_data(dataset_name : str, split: str) -> object:
+class NewsClassification():
+
+    def __init__():
+        self.model_name = config.MODEL_NAME
+        self.model_type = config.MODEL_TYPE
+        self.train_data = pd.read_csv(Path(config.DATA_DIR, "train.csv"))
+        self.test_data = pd.read_csv(Path(config.DATA_DIR, "test.csv"))
+        self.cuda = torch.cuda.is_available()
+        self.model_args = config.MODEL_ARGS
+        self.labels = config.LABELS
+
+    def preprocess_data(self, data: object, column_name: str) -> object:
+       """
+        Perform preprocessing on the text data
+
+        Parameters
+        ----------
+        data : object
+            dataframe.
+        column_name : str
+            name of the column in the dataframe
+
+        Returns
+        -------
+        object
+            pre-processed dataframe.
+
+        """
+        if column_name == 'text':
+            return data[column_name].str.lower()
+        if column_name == 'label':
+            return data[column_name] - 1
+
+    def split_data(self, data: object, random_seed: int) -> (object, object):
+        """
+        Split the dataset into train and eval
+
+        Parameters
+        ----------
+        data : object
+            dataframe containing training data.
+        random_seed : int
+            integer to set the random seed
+
+        Returns
+        -------
+        (object, object)
+            train split, eval split.
+
+        """
+        train_data, eval_data = train_test_split(data,
+                                                 test_size =
+                                                 config.TEST_SPLIT,
+                                                 random_state =
+                                                 random_seed)
+        return(train_data, eval_data)
+
+    def train(self, train_data: object, eval_data: object) -> object:
+        """
+        Create and train the chosen model based on the args
+
+        Parameters
+        ----------
+        train_data : object
+            train split of the train_data.
+        eval_data : object
+            validation split of the train_data.
+
+        Returns
+        -------
+        object
+            model.
+
+        """
+
+        # Create a ClassificationModel
+        model = ClassificationModel(self.model_name,
+                                    self.model_type,
+                                    args = self.model_args,
+                                    use_cuda = self.cuda,
+                                    num_labels = len(self.labels) - 1)
+        # Train the model
+        model.train_model(train_df = train_df,
+                          eval_df = eval_df,
+                          accuracy = accuracy_score)
+        return model
+
+    def load_model(self, model_type: str) -> object:
+        """
+        Load the specified model
+
+        Parameters
+        ----------
+        model_type : str
+            path or model type to be loaded.
+
+        Returns
+        -------
+        object
+            model.
+
+        """
+         model = ClassificationModel(self.model_name,
+                                    model_type,
+                                    args = self.model_args,
+                                    use_cuda = self.cuda,
+                                    num_labels = len(self.labels) - 1)
+         return model
+
+def main():
     """
-    Load the data from datasets library and convert to dataframe
+    Run the news classification model
 
-    Parameters
-    ----------
-    dataset_name : str
-        name of the dataset to be downloaded.
-    split : str
-        type of split (train or test).
     Returns
     -------
-    object
-        dataframe.
+    None.
 
     """
-    data = load_dataset(dataset_name, split = split)
-    return data
+    # Create classification object
+    news_model = NewsClassification()
 
-def save_data(path: str, dataframe: object) -> None:
-    """
-    Save the dataframe to a local folder
+    # Preprocess and split data
+    data = news_model.preprocess_data(news_model.train_data, "text")
+    train_data, val_data = news_model.split_data(data, config.RANDOM_SEED)
 
-    Parameters
-    ----------
-    path : str
-        path of the folder.
-    dataframe : object
-        dataframe object.
+    # Train model
+    train_model = news_model.train(train_data, eval_data)
 
-    Returns
-    -------
-    None
-        None.
+    # Load model
+    loaded_model = news_model.load_model(config.BEST_MODEL_SPEC_DIR)
 
-    """
-    dataframe.to_csv(path, index = False)
+    # Eval model
+    model_result, model_outputs, wrong_predictions = loaded_model.eval_model(eval_data,
+                                                                     accuracy =
+                                                                     accuracy_score)
+
+    # Prediction
+    predictions, raw_outputs = loaded_model.predict(news_model.test_data)
 
 if __name__ == '__main__':
-    train_data = load_data('ag_news', 'train')
-    test_data = load_data('ag_news', 'test')
-    save_data(Path(config.DATA_DIR, 'train.csv'), train_data)
-    save_data(Path(config.DATA_DIR, 'test.csv'), test_data)
+    main()
