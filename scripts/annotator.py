@@ -168,12 +168,11 @@ def main():
     df_for_annotation = pd.read_csv(annotation_data_path, index_col=False)
     df_for_annotation["sampling_method"].fillna("", inplace=True)
     sampling_method_in_data = df_for_annotation.sampling_method.unique()
-    if not (
-        "" in sampling_method_in_data or sampling_method in sampling_method_in_data
-    ):
-        raise ValueError(
-            f"""Warning: data of other sampling {sampling_method_in_data} method is being used, when actual sampling method is {sampling_method}. This might corrupt data"""
-        )
+    if len(sampling_method_in_data) > 1:
+        if sampling_method not in sampling_method_in_data:
+            raise ValueError(
+                f"""Warning: data of other sampling {sampling_method_in_data} method is being used, when actual sampling method is {sampling_method}. This might corrupt data"""
+            )
 
     exp_data = pd.read_csv(example_data_path)
     sampling_method_map = {
@@ -206,9 +205,7 @@ def main():
     print(f"Total annotation required {sample_size}, total annotated {tot_annotated}")
     annotated_data = pd.concat((annotated_data, reamining_data), axis=0)
     today = datetime.today().strftime("%Y%m%d")
-    out_file = os.path.join(
-        output_location, f"annotated_data_{sampling_method}_{today}.csv.gz"
-    )
+    out_file = os.path.join(output_location, f"annotated_data_{sampling_method}.csv.gz")
     print(f"Writing file to {out_file}")
     annotated_data.to_csv(out_file, index=False, compression="gzip")
 
