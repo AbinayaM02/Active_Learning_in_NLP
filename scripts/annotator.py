@@ -16,9 +16,10 @@ def clear():
         _ = os.system("clear")
 
 
-def random_sampling(raw_data: pd.DataFrame, size: int = 1000):
+def random_sampling(raw_data: pd.DataFrame, size: int = 1000, random_seed=100):
     raw_data = raw_data[raw_data["annotated_labels"].isna()].copy()
     all_idx = raw_data["idx"].values.tolist()
+    np.random.seed(random_seed)
     idx = np.random.choice(all_idx, size=size, replace=False)
     return idx
 
@@ -49,7 +50,7 @@ def entropy_sampling(raw_data: pd.DataFrame, size: int = 1000):
         raw_data[prob_cols] * np.log(raw_data[prob_cols]), axis=1
     )
     raw_data.sort_values("entropy", ascending=False, inplace=True)
-    return raw_data.head(size).idx
+    return raw_data.head(size).idx.values
 
 
 def annotation_message():
@@ -63,7 +64,8 @@ def annotation_message():
     annotation_instruction += "| 4: Sci/Tech               |\n"
     annotation_instruction += "| 0: Not Sure               |\n"
     annotation_instruction += "-----------------------------\n"
-    annotation_instruction += "save: to save the results\n"
+    annotation_instruction += "| save: to save the results |\n"
+    annotation_instruction += "| f: full instruction       |\n"
     annotation_instruction += "-----------------------------\n"
 
     full_instruction = annotation_instruction
