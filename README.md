@@ -47,7 +47,7 @@ Takes two numbers and returns the sum.
   
 ## Authors and Acknowledgement
 
-- [@katherinepeterson](https://www.github.com/katherinepeterson) for development and design.
+- [@katherinepeterson](https://www.github.com/katherinepeterson) for development and design of README.so.
 
   
 ## Appendix
