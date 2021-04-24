@@ -7,6 +7,10 @@ from datetime import datetime
 import json
 import argparse
 import ipdb
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parents[1]
+DATA_DIR = Path(BASE_DIR, "data")
 
 
 def clear():
@@ -165,15 +169,16 @@ def main():
     output_location = args.output_location
     example_data_path = args.example_data
     if example_data_path is None:
-        example_data_path = "../../data/exp_data.csv.gz"
+        example_data_path = DATA_DIR / "exp_data.csv.gz"
 
     df_for_annotation = pd.read_csv(annotation_data_path, index_col=False)
     df_for_annotation["sampling_method"].fillna("", inplace=True)
     sampling_method_in_data = df_for_annotation.sampling_method.unique()
     if len(sampling_method_in_data) > 1:
         if sampling_method not in sampling_method_in_data:
+            smd = [smd for smd in sampling_method_in_data if smd != ""]
             raise ValueError(
-                f"""Warning: data of other sampling {sampling_method_in_data} method is being used, when actual sampling method is {sampling_method}. This might corrupt data"""
+                f"""Warning: data of other sampling `{smd}` method is being used, when actual sampling method is `{sampling_method}`. This might corrupt data"""
             )
 
     exp_data = pd.read_csv(example_data_path)
