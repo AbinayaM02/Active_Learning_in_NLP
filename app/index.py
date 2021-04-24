@@ -1,7 +1,11 @@
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-from layouts import initial_layout, layout1, layout2  # annotate_data_dir
+from layouts import (  # annotate_data_dir
+    annotation_layout,
+    initial_layout,
+    instruction_layout,
+)
 
 from app import app
 
@@ -12,10 +16,10 @@ app.layout = html.Div([dcc.Location(id="url", refresh=False), html.Div(id="page-
 
 @app.callback(Output("page-content", "children"), Input("url", "pathname"))
 def display_page(pathname):
-    if pathname == "/apps/app1":
-        return layout1
-    elif pathname == "/apps/app2":
-        return layout2
+    if pathname == "/instruction":
+        return instruction_layout
+    elif pathname == "/annotate":
+        return annotation_layout
     else:
         return initial_layout
 
