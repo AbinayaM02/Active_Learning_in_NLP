@@ -3,7 +3,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 
 from app import app
-from layouts import layout1, layout2, initial_layout, annotate_data_dir
+from layouts import instruction_layout, annotation_layout, initial_layout, annotate_data_dir
 import callbacks
 
 app.layout = html.Div(
@@ -13,10 +13,10 @@ app.layout = html.Div(
 
 @app.callback(Output("page-content", "children"), Input("url", "pathname"))
 def display_page(pathname):
-    if pathname == "/apps/app1":
-        return layout1
-    elif pathname == "/apps/app2":
-        return layout2
+    if pathname == "/instruction":
+        return instruction_layout
+    elif pathname == "/annotate":
+        return annotation_layout
     else:
         return initial_layout
 

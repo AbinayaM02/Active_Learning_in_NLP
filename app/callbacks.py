@@ -1,8 +1,17 @@
 from dash.dependencies import Input, Output, State
 import pandas as pd
 import os
+import sys
+from pathlib import Path
 from layouts import annotate_data_dir
 from app import app
+
+
+SCRIPT_DIR = Path(__file__).resolve().parents[1]
+sys.path.append(str(SCRIPT_DIR))
+
+
+from scripts.annotator import get_data
 
 
 @app.callback(
@@ -27,10 +36,14 @@ def display_value(value):
     [
         State("choose-data", "value"),
         State("choose-annotate-method", "value"),
+        State("choose-sample-size", "value"),
     ],
 )
-def get_data(n_clicks, data, method):
-    df = pd.read_csv(os.path.join(annotate_data_dir, data))
-    print(df.head())
+def get_data_for_annotation(n_clicks, data, method, sample_size):
+    if n_clicks == 0:
+        return "No Data Selected"
+    data_path = os.path.join(annotate_data_dir, data)
+    df_annotate, df_annotated = get_data(data_path, method, sample_size)
+    print(df_annotate.head())
 
     return f"Data is {data}, annotation method {method}"
