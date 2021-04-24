@@ -8,10 +8,36 @@ Config file to all the configurations
 """
 
 # Import necessary libraries
-import logging
+import logging, logging.config
 import sys
 from pathlib import Path
+from rich.logging import RichHandler
 from simpletransformers.classification import ClassificationArgs
+
+# Directories
+BASE_DIR = Path(__file__).parent.parent.absolute()
+CONFIG_DIR = Path(BASE_DIR, "config")
+LOGS_DIR = Path(BASE_DIR, "logs")
+DATA_DIR = Path(BASE_DIR, "data")
+MODEL_DIR = Path(BASE_DIR, "model")
+STORES_DIR = Path(BASE_DIR, "stores")
+CACHE_DIR = Path(DATA_DIR, "cache")
+BEST_MODEL_DIR = Path(MODEL_DIR, "{}/best_model")
+OUTPUT_DIR = Path(DATA_DIR, "output")
+
+# Local stores
+BLOB_STORE = Path(STORES_DIR, "blob_store")
+FEATURE_STORE = Path(STORES_DIR, "feature_store")
+MODEL_REGISTRY = Path(STORES_DIR, "model_store")
+
+# Create dirs
+LOGS_DIR.mkdir(parents=True, exist_ok=True)
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+MODEL_DIR.mkdir(parents=True, exist_ok=True)
+STORES_DIR.mkdir(parents=True, exist_ok=True)
+BLOB_STORE.mkdir(parents=True, exist_ok=True)
+FEATURE_STORE.mkdir(parents=True, exist_ok=True)
+MODEL_REGISTRY.mkdir(parents=True, exist_ok=True)
 
 # Set up logging
 # Logger
@@ -61,31 +87,6 @@ logger = logging.getLogger("root")
 logger.handlers[0] = RichHandler(markup=True)
 
 RANDOM_SEED = 100
-
-# Directories
-BASE_DIR = Path(__file__).parent.parent.absolute()
-CONFIG_DIR = Path(BASE_DIR, "config")
-LOGS_DIR = Path(BASE_DIR, "logs")
-DATA_DIR = Path(BASE_DIR, "data")
-MODEL_DIR = Path(BASE_DIR, "model")
-STORES_DIR = Path(BASE_DIR, "stores")
-CACHE_DIR = Path(DATA_DIR, "cache")
-BEST_MODEL_DIR = Path(MODEL_DIR, "{}/best_model")
-OUTPUT_DIR = Path(DATA_DIR, "output")
-
-# Local stores
-BLOB_STORE = Path(STORES_DIR, "blob_store")
-FEATURE_STORE = Path(STORES_DIR, "feature_store")
-MODEL_REGISTRY = Path(STORES_DIR, "model_store")
-
-# Create dirs
-LOGS_DIR.mkdir(parents=True, exist_ok=True)
-DATA_DIR.mkdir(parents=True, exist_ok=True)
-MODEL_DIR.mkdir(parents=True, exist_ok=True)
-STORES_DIR.mkdir(parents=True, exist_ok=True)
-BLOB_STORE.mkdir(parents=True, exist_ok=True)
-FEATURE_STORE.mkdir(parents=True, exist_ok=True)
-MODEL_REGISTRY.mkdir(parents=True, exist_ok=True)
 
 # wandb directory (change the names as per need)
 WANDB_PROJ_COMPLETE_DATA = 'model_complete_data'

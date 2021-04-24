@@ -12,7 +12,7 @@ Script to download ag_news dataset
 import pandas as pd
 from datasets import load_dataset
 from pathlib import Path
-import config
+from config import DATA_DIR, logger
 
 # Load data and convert it to dataframe
 def load_data(dataset_name : str, split: str) -> object:
@@ -32,6 +32,7 @@ def load_data(dataset_name : str, split: str) -> object:
 
     """
     data = load_dataset(dataset_name, split = split)
+    logger.info(split + ' dataset downloaded!')
     return data
 
 def save_data(path: str, dataframe: object) -> None:
@@ -52,9 +53,10 @@ def save_data(path: str, dataframe: object) -> None:
 
     """
     dataframe.to_csv(path, index = False)
+    logger.info('dataset saved!')
 
 if __name__ == '__main__':
     train_data = load_data('ag_news', 'train')
+    save_data(Path(DATA_DIR, 'train.csv'), train_data)
     test_data = load_data('ag_news', 'test')
-    save_data(Path(config.DATA_DIR, 'train.csv'), train_data)
-    save_data(Path(config.DATA_DIR, 'test.csv'), test_data)
+    save_data(Path(DATA_DIR, 'test.csv'), test_data)
