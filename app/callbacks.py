@@ -1,22 +1,20 @@
-from dash.dependencies import Input, Output, State
-import pandas as pd
 import os
+
+import pandas as pd
+from dash.dependencies import Input, Output, State
 from layouts import annotate_data_dir
+
 from app import app
 
 
-@app.callback(
-    Output("app-1-display-value", "children"), Input("app-1-dropdown", "value")
-)
+@app.callback(Output("app-1-display-value", "children"), Input("app-1-dropdown", "value"))
 def display_value(value):
     return 'You have selected "{}"'.format(value)
 
 
-@app.callback(
-    Output("app-2-display-value", "children"), Input("app-2-dropdown", "value")
-)
-def display_value(value):
-    return 'You have selected "{}"'.format(value)
+# @app.callback(Output("app-2-display-value", "children"), Input("app-2-dropdown", "value"))
+# def display_value(value):
+#    return 'You have selected "{}"'.format(value)
 
 
 @app.callback(

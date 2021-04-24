@@ -3,7 +3,7 @@
 
 The aim of this project is to identify if active learning can help in building better language models with less good quality data.
 
-The project is undertaken as part of the Full Stack Deep Learning Course, 2021. 
+The project is undertaken as part of the Full Stack Deep Learning Course, 2021.
 
 ## Initial Plan
 The initial plan is to build an end-to-end project that contains the following components,
@@ -44,22 +44,22 @@ The initial plan is to build an end-to-end project that contains the following c
 
 Takes two numbers and returns the sum.
 
-  
+
 ## Authors and Acknowledgement
 
 - [@katherinepeterson](https://www.github.com/katherinepeterson) for development and design of README.so.
 
-  
+
 ## Appendix
 
 Any additional information goes here
 
-  
+
 ## Demo
 
 Insert gif or link to demo
 
-  
+
 ## Deployment
 
 To deploy this project run
@@ -68,12 +68,12 @@ To deploy this project run
   npm run deploy
 ```
 
-  
+
 ## Documentation
 
 [Documentation](https://linktodocumentation)
 
-  
+
 ## Environment Variables
 
 To run this project, you will need to add the following environment variables to your .env file
@@ -82,7 +82,7 @@ To run this project, you will need to add the following environment variables to
 
 `ANOTHER_API_KEY`
 
-  
+
 ## FAQ
 
 #### Question 1
@@ -93,7 +93,7 @@ Answer 1
 
 Answer 2
 
-  
+
 ## Features
 
 - Light/dark mode toggle
@@ -101,38 +101,38 @@ Answer 2
 - Fullscreen mode
 - Cross platform
 
-  
+
 ## Feedback
 
 If you have any feedback, please reach out to us at fake@fake.com
 
-  
-## Installation 
+
+## Installation
 
 Install my-project with npm
 
-```bash 
+```bash
   npm install my-project
   cd my-project
 ```
-    
+
 ## Lessons Learned
 
 What did you learn while building this project? What challenges did you face and how did you overcome them?
 
-  
+
 ## Roadmap
 
 - Additional browser support
 
 - Add more integrations
 
-  
+
 ## Screenshots
 
 ![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
 
-  
+
 ## Running Tests
 
 To run tests, run the following command
@@ -141,7 +141,7 @@ To run tests, run the following command
   npm run test
 ```
 
-  
+
 ## Usage/Examples
 
 ```javascript
@@ -152,9 +152,9 @@ function App() {
 }
 ```
 
-  
+
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
 
-  
+

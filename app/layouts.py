@@ -1,7 +1,8 @@
-import dash_core_components as dcc
-import dash_html_components as html
 import os
 from pathlib import Path
+
+import dash_core_components as dcc
+import dash_html_components as html
 
 colors = {"background": "#000000", "text": "#7FDBFF"}
 class_map = {1: "World News", 2: "Sports", 3: "Business", 4: "Sci/Tech", 0: "Not Sure"}
@@ -22,8 +23,7 @@ initial_layout = html.Div(
                         dcc.Dropdown(
                             id="choose-data",
                             options=[
-                                {"label": i, "value": i}
-                                for i in os.listdir(annotate_data_dir)
+                                {"label": i, "value": i} for i in os.listdir(annotate_data_dir)
                             ],
                             style={"width": "50%"},
                         ),
@@ -62,10 +62,7 @@ layout1 = html.Div(
         html.H3("App 1"),
         dcc.Dropdown(
             id="app-1-dropdown",
-            options=[
-                {"label": "App 1 - {}".format(i), "value": i}
-                for i in ["NYC", "MTL", "LA"]
-            ],
+            options=[{"label": "App 1 - {}".format(i), "value": i} for i in ["NYC", "MTL", "LA"]],
         ),
         html.Div(id="app-1-display-value"),
         dcc.Link("Go to App 2", href="/apps/app2"),
@@ -77,10 +74,7 @@ layout2 = html.Div(
         html.H3("App 2"),
         dcc.Dropdown(
             id="app-2-dropdown",
-            options=[
-                {"label": "App 2 - {}".format(i), "value": i}
-                for i in ["NYC", "MTL", "LA"]
-            ],
+            options=[{"label": "App 2 - {}".format(i), "value": i} for i in ["NYC", "MTL", "LA"]],
         ),
         html.Div(id="app-2-display-value"),
         dcc.Link("Go to App 1", href="/apps/app1"),

@@ -1,14 +1,13 @@
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+from layouts import initial_layout, layout1, layout2  # annotate_data_dir
 
 from app import app
-from layouts import layout1, layout2, initial_layout, annotate_data_dir
-import callbacks
 
-app.layout = html.Div(
-    [dcc.Location(id="url", refresh=False), html.Div(id="page-content")]
-)
+# import callbacks
+
+app.layout = html.Div([dcc.Location(id="url", refresh=False), html.Div(id="page-content")])
 
 
 @app.callback(Output("page-content", "children"), Input("url", "pathname"))
