@@ -8,9 +8,11 @@ Config file to all the configurations
 """
 
 # Import necessary libraries
-import logging, logging.config
+import logging
+import logging.config
 import sys
 from pathlib import Path
+
 from rich.logging import RichHandler
 from simpletransformers.classification import ClassificationArgs
 
@@ -89,44 +91,35 @@ logger.handlers[0] = RichHandler(markup=True)
 RANDOM_SEED = 100
 
 # wandb directory (change the names as per need)
-WANDB_PROJ_COMPLETE_DATA = 'model_complete_data'
-WANDB_PROJ_AL_BASELINE = 'model_al_baseline'
-WANDB_PROJ_AL_EXP = 'model_al_experiments'
+WANDB_PROJ_COMPLETE_DATA = "model_complete_data"
+WANDB_PROJ_AL_BASELINE = "model_al_baseline"
+WANDB_PROJ_AL_EXP = "model_al_experiments"
 
 # Model args for the simpletransformer model
 # Add or modify parameters bases on experiment
 BEST_MODEL_SPEC_DIR = str(BEST_MODEL_DIR).format(WANDB_PROJ_AL_EXP)
-MODEL_ARGS = ClassificationArgs(num_train_epochs = 5,
-                                overwrite_output_dir = True,
-                                train_batch_size = 16,
-                                max_seq_length = 250,
-                                # modify based on the experiment
-                                wandb_project = WANDB_PROJ_AL_EXP,
-                                best_model_dir = BEST_MODEL_SPEC_DIR,
-                                cache_dir = CACHE_DIR,
-                                eval_batch_size = 16,
-                                evaluate_during_training = True,
-                                evaluate_during_training_verbose = True,
-                                manual_seed = 100,
-                                output_dir = OUTPUT_DIR,
-                                use_early_stopping = True,
-                                early_stopping_patience = 3,
-            )
+MODEL_ARGS = ClassificationArgs(
+    num_train_epochs=5,
+    overwrite_output_dir=True,
+    train_batch_size=16,
+    max_seq_length=250,
+    # modify based on the experiment
+    wandb_project=WANDB_PROJ_AL_EXP,
+    best_model_dir=BEST_MODEL_SPEC_DIR,
+    cache_dir=CACHE_DIR,
+    eval_batch_size=16,
+    evaluate_during_training=True,
+    evaluate_during_training_verbose=True,
+    manual_seed=100,
+    output_dir=OUTPUT_DIR,
+    use_early_stopping=True,
+    early_stopping_patience=3,
+)
 
 # Model name (roberta-base, roberta-base-uncased, etc)
 MODEL_NAME = "roberta"
 MODEL_TYPE = "roberta-base"
 
 # Labels for classification
-LABELS = {'0': 'Not sure',
-          '1': 'World',
-          '2': 'Sports',
-          '3': 'Business',
-          '4': 'Sci/Tech'}
+LABELS = {"0": "Not sure", "1": "World", "2": "Sports", "3": "Business", "4": "Sci/Tech"}
 TEST_SPLIT = 0.2
-
-
-
-
-
-

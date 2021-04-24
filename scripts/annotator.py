@@ -1,12 +1,9 @@
-from numpy.core.defchararray import index
-from numpy.core.numeric import full
-import pandas as pd
-import numpy as np
-import os
-from datetime import datetime
-import json
+# from datetime import datetime
 import argparse
-import ipdb
+import os
+
+import numpy as np
+import pandas as pd
 
 
 def clear():
@@ -46,9 +43,7 @@ def entropy_sampling(raw_data: pd.DataFrame, size: int = 1000):
     raw_data = raw_data[raw_data["annotated_labels"].isna()].copy()
 
     prob_cols = ["prob_0", "prob_1", "prob_2", "prob_3"]
-    raw_data["entropy"] = -1 * np.sum(
-        raw_data[prob_cols] * np.log(raw_data[prob_cols]), axis=1
-    )
+    raw_data["entropy"] = -1 * np.sum(raw_data[prob_cols] * np.log(raw_data[prob_cols]), axis=1)
     raw_data.sort_values("entropy", ascending=False, inplace=True)
     return raw_data.head(size).idx.values
 
@@ -109,7 +104,7 @@ def get_annotation(data, exp_data):
             ind = 0
         if ind > 0:
             clear()
-        textId = data.loc[ind, "idx"]
+        # textId = data.loc[ind, "idx"]
         title = data.loc[ind, "title"]
         description = data.loc[ind, "description"]
 
@@ -142,22 +137,16 @@ def get_annotation(data, exp_data):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Annotate data using uncertainty sampling methods"
-    )
+    parser = argparse.ArgumentParser(description="Annotate data using uncertainty sampling methods")
     parser.add_argument("annotation_data", help="data to be annotated")
     parser.add_argument(
         "sampling_method",
         default="random",
         help="method to use to sample data for annotation, options are `random`, `least`, `margin`, `entropy`",
     )
-    parser.add_argument(
-        "sample_size", default=100, help="Number of samples to be annotated"
-    )
+    parser.add_argument("sample_size", default=100, help="Number of samples to be annotated")
     parser.add_argument("output_location", help="location to write annotated data")
-    parser.add_argument(
-        "--example_data", help="data from which we pick example for each class"
-    )
+    parser.add_argument("--example_data", help="data from which we pick example for each class")
     args = parser.parse_args()
     annotation_data_path = args.annotation_data
     sampling_method = args.sampling_method
@@ -184,12 +173,8 @@ def main():
         "entropy": entropy_sampling,
     }
     if sampling_method not in list(sampling_method_map.keys()):
-        raise ValueError(
-            "Sampling method has to be one of `random`, `least`, `margin`, `entropy` "
-        )
-    sample_idx = sampling_method_map[sampling_method](
-        df_for_annotation, size=sample_size
-    )
+        raise ValueError("Sampling method has to be one of `random`, `least`, `margin`, `entropy` ")
+    sample_idx = sampling_method_map[sampling_method](df_for_annotation, size=sample_size)
 
     data = df_for_annotation[df_for_annotation["idx"].isin(sample_idx)]
     reamining_data = df_for_annotation[~(df_for_annotation["idx"].isin(sample_idx))]
@@ -206,7 +191,7 @@ def main():
     clear()
     print(f"Total annotation required {sample_size}, total annotated {tot_annotated}")
     annotated_data = pd.concat((annotated_data, reamining_data), axis=0)
-    today = datetime.today().strftime("%Y%m%d")
+    # today = datetime.today().strftime("%Y%m%d")
     out_file = os.path.join(output_location, f"annotated_data_{sampling_method}.csv.gz")
     print(f"Writing file to {out_file}")
     annotated_data.to_csv(out_file, index=False, compression="gzip")

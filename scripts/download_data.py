@@ -7,15 +7,16 @@ Script to download ag_news dataset
 @author: Abinaya Mahendiran
 """
 
+from pathlib import Path
 
 # Import necessary libraries
-import pandas as pd
 from datasets import load_dataset
-from pathlib import Path
+
 from config import DATA_DIR, logger
 
+
 # Load data and convert it to dataframe
-def load_data(dataset_name : str, split: str) -> object:
+def load_data(dataset_name: str, split: str) -> object:
     """
     Load the data from datasets library and convert to dataframe
 
@@ -31,10 +32,12 @@ def load_data(dataset_name : str, split: str) -> object:
         dataframe.
 
     """
-    data = load_dataset(dataset_name, split = split)
-    logger.info(split + ' dataset downloaded!')
+    data = load_dataset(dataset_name, split=split)
+    logger.info(split + " dataset downloaded!")
     return data
 
+
+# Save teh data locally
 def save_data(path: str, dataframe: object) -> None:
     """
     Save the dataframe to a local folder
@@ -52,11 +55,12 @@ def save_data(path: str, dataframe: object) -> None:
         None.
 
     """
-    dataframe.to_csv(path, index = False)
-    logger.info('dataset saved!')
+    dataframe.to_csv(path, index=False)
+    logger.info("dataset saved!")
 
-if __name__ == '__main__':
-    train_data = load_data('ag_news', 'train')
-    save_data(Path(DATA_DIR, 'train.csv'), train_data)
-    test_data = load_data('ag_news', 'test')
-    save_data(Path(DATA_DIR, 'test.csv'), test_data)
+
+if __name__ == "__main__":
+    train_data = load_data("ag_news", "train")
+    save_data(Path(DATA_DIR, "train.csv"), train_data)
+    test_data = load_data("ag_news", "test")
+    save_data(Path(DATA_DIR, "test.csv"), test_data)
