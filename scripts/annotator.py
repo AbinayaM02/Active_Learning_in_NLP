@@ -9,6 +9,15 @@ import argparse
 import ipdb
 
 
+def get_sampling_method_map():
+    return {
+        "random": random_sampling,
+        "least": least_confidence_sampling,
+        "margin": margin_sampling,
+        "entropy": entropy_sampling,
+    }
+
+
 def clear():
     if os.name == "nt":
         _ = os.system("cls")
@@ -87,6 +96,25 @@ def annotation_message():
 def get_examples(exp_data, label=0):
     label_data = exp_data[exp_data["labels"] == label]
     return label_data.head(1)
+
+
+def get_data(annotation_data_path, sampling_method, sample_size):
+
+    df_for_annotation = pd.read_csv(annotation_data_path, index_col=False)
+    df_for_annotation["sampling_method"].fillna("", inplace=True)
+    sampling_method_in_data = df_for_annotation.sampling_method.unique()
+    if len(sampling_method_in_data) > 1:
+        if sampling_method not in sampling_method_in_data:
+            raise ValueError(
+                f"""Warning: data of other sampling {sampling_method_in_data} method is being used, when actual sampling method is {sampling_method}. This might corrupt data"""
+            )
+    sampling_method_map = get_sampling_method_map()
+    sample_idx = sampling_method_map[sampling_method](
+        df_for_annotation, size=sample_size
+    )
+    data = df_for_annotation[df_for_annotation["idx"].isin(sample_idx)]
+    remaining_data = df_for_annotation[~(df_for_annotation["idx"].isin(sample_idx))]
+    return (data, remaining_data)
 
 
 def get_annotation(data, exp_data):
