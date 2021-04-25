@@ -37,5 +37,5 @@ addopts = "--strict-markers --disable-pytest-warnings"
 #markers
 
 # Pytest coverage
-#[tool.coverage.run]
-#omit = []
+[tool.coverage.run]
+omit = ["app/"]
