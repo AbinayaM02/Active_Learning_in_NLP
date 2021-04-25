@@ -1,6 +1,4 @@
 import os
-import sys
-from pathlib import Path
 
 # import pandas as pd
 from dash.dependencies import Input, Output, State
@@ -9,8 +7,12 @@ from layouts import annotate_data_dir
 from app import app
 from scripts.annotator import get_data
 
-SCRIPT_DIR = Path(__file__).resolve().parents[1]
-sys.path.append(str(SCRIPT_DIR))
+# import sys
+# from pathlib import Path
+
+
+# SCRIPT_DIR = Path(__file__).resolve().parents[1]
+# sys.path.append(str(SCRIPT_DIR))
 
 
 @app.callback(Output("app-1-display-value", "children"), Input("app-1-dropdown", "value"))

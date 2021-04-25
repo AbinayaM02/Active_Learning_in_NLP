@@ -12,7 +12,7 @@ import dash_html_components as html
 
 colors = {"background": "#000000", "text": "#7FDBFF"}
 class_map = {1: "World News", 2: "Sports", 3: "Business", 4: "Sci/Tech", 0: "Not Sure"}
-annotate_data_dir = Path(__file__).resolve().parents[1] / "annotate_data/20210421"
+annotate_data_dir = Path(__file__).resolve().parents[1] / "data/output/20210421"
 
 initial_layout = html.Div(
     # style={"backgroundColor": colors["background"]},
