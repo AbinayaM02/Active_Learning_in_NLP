@@ -77,7 +77,7 @@ def annotation_message():
         "Please provide input as per the instruction given in box to see examples \n"
     )
     full_instruction += "----------------------------------------\n"
-    full_instruction += "| b: go back to last text              |\n"
+    full_instruction += "| u: go back to last text (undo)       |\n"
     full_instruction += "| w: World News examples               |\n"
     full_instruction += "| s: Sports News examples              |\n"
     full_instruction += "| b: Business News examples            |\n"
@@ -143,7 +143,7 @@ def get_annotation(data, exp_data):
         if label in ["0", "1", "2", "3", "4"]:
             data.loc[ind, "annotated_labels"] = int(label) - 1
             ind += 1
-        elif label == "b":
+        elif label == "u":
             ind -= 1 if ind > 0 else 0
         elif label in ["w", "s", "b", "t"]:
             exp = get_examples(exp_data, label_map.get(label, 0))
@@ -180,7 +180,7 @@ def main():
     output_location = args.output_location
     example_data_path = args.example_data
     if example_data_path is None:
-        example_data_path = "../../data/exp_data.csv.gz"
+        example_data_path = "data/exp_data.csv.gz"
 
     df_for_annotation = pd.read_csv(annotation_data_path, index_col=False)
     df_for_annotation["sampling_method"].fillna("", inplace=True)
