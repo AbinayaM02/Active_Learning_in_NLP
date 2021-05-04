@@ -6,14 +6,17 @@ from app import app
 from layouts import (  # annotate_data_dir
     annotation_layout,
     tagging_layout,
-    instruction_example_tabs
-)
+    instruction_example_tabs,
+    sidebar, 
+    sidebar_content)
 import callbacks
 
 # Define app layout
 app.layout = html.Div(children=[
     dcc.Location(id="url", refresh=False),
-    html.Div(id="page-content")
+    #html.Div(id="page-content"),
+    sidebar,
+    sidebar_content
 ])
 
 

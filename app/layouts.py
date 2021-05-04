@@ -182,10 +182,6 @@ instruction_example_tabs = html.Div(
             id="tabs-content",
         ),
         html.Div(id='instruction-example-tab'),
-        dcc.Link(
-            dbc.Button(children="Next", id="annotate-val", n_clicks=0, color="primary"),
-            href="/annotate_info",
-        ),
     ]
 )
 
@@ -220,3 +216,40 @@ annotation_layout = html.Div(
         ),
     ]
 )
+
+# styling the sidebar
+SIDEBAR_STYLE = {
+    "position": "fixed",
+    "top": 0,
+    "left": 0,
+    "bottom": 0,
+    "width": "16rem",
+    "padding": "2rem 1rem",
+    "background-color": "#f8f9fa",
+}
+
+# padding for the page content
+CONTENT_STYLE = {
+    "margin-left": "18rem",
+    "margin-right": "2rem",
+    "padding": "2rem 1rem",
+}
+
+sidebar = html.Div(
+    [
+        html.H4("Active Learning", className="display-6"),
+        html.Hr(),
+        dbc.Nav(
+            [
+                dbc.NavLink("Home", href="/home", active="exact"),
+                dbc.NavLink("Annotation Information", href="/annotate_info", active="exact"),
+                dbc.NavLink("Page 2", href="/page-2", active="exact"),
+            ],
+            vertical=True,
+            pills=True,
+        ),
+    ],
+    style=SIDEBAR_STYLE,
+)
+
+sidebar_content = html.Div(id="page-content", children=[], style=CONTENT_STYLE)
