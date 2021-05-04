@@ -12,13 +12,15 @@ from layouts import (  # annotate_data_dir
 import callbacks
 
 # Define app layout
-app.layout = html.Div(children=[
-    dcc.Location(id="url", refresh=False),
-    #html.Div(id="page-content"),
-    sidebar,
-    sidebar_content
-])
-
+app.layout = dbc.Container(
+    [
+        dcc.Location(id="url", refresh=False),
+        #html.Div(id="page-content"),
+        sidebar,
+        sidebar_content,
+    ],
+    fluid=True
+)
 
 @app.callback(
     Output("page-content", "children"), 

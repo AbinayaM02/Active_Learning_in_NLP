@@ -9,68 +9,82 @@ colors = {"background": "#000000", "text": "#7FDBFF"}
 class_map = {1: "World News", 2: "Sports", 3: "Business", 4: "Sci/Tech", 0: "Not Sure"}
 annotate_data_dir = Path(__file__).resolve().parents[1] / "data/output/20210421"
 
+data_file_dropdown = dcc.Dropdown(
+    id="choose-data",
+    options=[
+        {"label": i, "value": i} for i in os.listdir(annotate_data_dir)
+    ],
+    style={"width": "75%"},
+
+)
+
+annotation_method_dropdown = dcc.Dropdown(
+    id="choose-annotate-method",
+    options=[
+        {"label": "Random Sampling", "value": "random"},
+        {"label": "Least Confidence Sampling", "value": "least",},
+        {"label": "Margin Sampling", "value": "margin"},
+        {"label": "Entropy Base Sampling", "value": "entropy"},
+    ],
+    value="random",
+    style={"width": "75%"},
+)
+
+sample_slider = dcc.Slider(
+    id='selected-samples',
+    min=0,
+    max=1000,
+    step=10,
+    marks={i: '{}'.format(i) for i in range(1001) if i%100 == 0},
+    value=50,
+    updatemode='drag',
+)
+
 tagging_layout = html.Div(
-    children=[
-        html.H1(
+     [
+        dbc.CardHeader(
             children="annotate.it",
-            style={"textAlign": "center", "color": colors["text"]},
+            style={"textAlign": "center"},
         ),
-        html.Div(
-            [
-                html.Label(
+        dbc.Card(
+            [   
+                html.Div(
                     [
-                        "Choose data to annotate",
-                        dcc.Dropdown(
-                            id="choose-data",
-                            options=[
-                                {"label": i, "value": i} for i in os.listdir(annotate_data_dir)
-                            ],
-                            style={"width": "75%"},
-                        ),
-                    ],
-                    style={"width": "50%"},
+                        html.Br(),
+                        html.Br(),
+                    ]
                 ),
-                html.Label(
+                dbc.Row(
+                [   
+                    dbc.Col(dbc.FormGroup([dbc.Label("Choose data to annotate"), data_file_dropdown]), width={"size": 5, "order": "first", "offset": 1}),
+                    dbc.Col(dbc.FormGroup([dbc.Label("Choose annotation method"), annotation_method_dropdown]), width={"size": 5, "order": "last", "offset": 1}),
+                ],
+                justify="around"
+                ),
+                html.Div(
                     [
-                        "Choose annotation method",
-                        dcc.Dropdown(
-                            id="choose-annotate-method",
-                            options=[
-                                {"label": "Random Sampling", "value": "random"},
-                                {"label": "Least Confidence Sampling", "value": "least",},
-                                {"label": "Margin Sampling", "value": "margin"},
-                                {"label": "Entropy Base Sampling", "value": "entropy"},
-                            ],
-                            value="random",
-                            style={"width": "75%"},
+                        html.Br(),
+                        html.Br(),
+                        dbc.Label("Select number of samples"), 
+                        sample_slider, 
+                        html.Div(id="slider-output-container"),
+                    ]
+                ),
+                html.Div(
+                    [
+                        html.Br(),
+                        html.Br(),
+                        dbc.CardLink(
+                            dbc.Button("Submit", id="submit-val", n_clicks=0, color="primary", size="md", className="mr-1"),
+                            href="/annotate",
                         ),
-                    ],
-                    style={"width": "50%"},
+                    ]
                 ),
-            ],
-            style={"display": "flex", "columnCount": 2, "padding": 50},
+            ]
         ),
-        html.Div(
-            [
-                html.Label('Select number of samples'),
-                dcc.Slider(
-                    id='selected-samples',
-                    min=0,
-                    max=1000,
-                    step=10,
-                    marks={i: '{}'.format(i) for i in range(1001) if i%100 == 0},
-                    value=50,
-                    updatemode='drag',
-                ),
-                html.Div(id='slider-output-container', style={"padding": 30}),
-            ],
-        ),
-        dcc.Link(
-            html.Button(children="Submit", id="submit-val", n_clicks=0),
-            href="/annotate",
-        ),
-        html.H1(id="selected-data-method"),
-    ]
+        html.H1(id="selected-data-method")
+    ],
+    className="m-4 px-2",
 )
 
 instruction_tab_content = dbc.Card(
@@ -170,9 +184,9 @@ example_tab_content  = dbc.Card(
 
 instruction_example_tabs = html.Div(
     [
-        html.H2(
+        dbc.CardHeader(
             children="Annotation Instructions and Examples",
-            style={"textAlign": "center", "color": colors["text"]},
+            style={"textAlign": "center"},
         ),
         dbc.Tabs(
             [
@@ -242,7 +256,7 @@ sidebar = html.Div(
         dbc.Nav(
             [
                 dbc.NavLink("Home", href="/home", active="exact"),
-                dbc.NavLink("Annotation Information", href="/annotate_info", active="exact"),
+                dbc.NavLink("Annotate", href="/annotate_info", active="exact"),
                 dbc.NavLink("Page 2", href="/page-2", active="exact"),
             ],
             vertical=True,
