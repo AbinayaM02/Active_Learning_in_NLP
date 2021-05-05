@@ -5,8 +5,8 @@ from dash.dependencies import Input, Output, State
 from layouts import (annotate_data_dir,
                     annotation_layout,
                     instruction_example_tabs,
-                    instruction_layout,
-                    example_layout,
+                    instruction_tab_content,
+                    example_tab_content,
                     tagging_layout)
 from scripts import annotator
 from app import app
@@ -41,8 +41,8 @@ def get_data_for_annotation(n_clicks, data, method, sample_size):
               Input('tabs-content', 'value'))
 def render_content(tab):
     if tab == 'Annotation Instructions':
-        return instruction_layout
+        return instruction_tab_content
     elif tab == 'Annotation Examples':
-        return example_layout
+        return example_tab_content
 
 

@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import dash_core_components as dcc
+import dash_bootstrap_components as dbc
 import dash_html_components as html
 
 
@@ -8,119 +9,110 @@ colors = {"background": "#000000", "text": "#7FDBFF"}
 class_map = {1: "World News", 2: "Sports", 3: "Business", 4: "Sci/Tech", 0: "Not Sure"}
 annotate_data_dir = Path(__file__).resolve().parents[1] / "data/output/20210421"
 
+data_file_dropdown = dcc.Dropdown(
+    id="choose-data",
+    options=[
+        {"label": i, "value": i} for i in os.listdir(annotate_data_dir)
+    ],
+    style={"width": "75%"},
+
+)
+
+annotation_method_dropdown = dcc.Dropdown(
+    id="choose-annotate-method",
+    options=[
+        {"label": "Random Sampling", "value": "random"},
+        {"label": "Least Confidence Sampling", "value": "least",},
+        {"label": "Margin Sampling", "value": "margin"},
+        {"label": "Entropy Base Sampling", "value": "entropy"},
+    ],
+    value="random",
+    style={"width": "75%"},
+)
+
+sample_slider = dcc.Slider(
+    id='selected-samples',
+    min=0,
+    max=1000,
+    step=10,
+    marks={i: '{}'.format(i) for i in range(1001) if i%100 == 0},
+    value=50,
+    updatemode='drag',
+)
+
 tagging_layout = html.Div(
-    children=[
-        html.H1(
+     [
+        dbc.CardHeader(
             children="annotate.it",
-            style={"textAlign": "center", "color": colors["text"]},
+            style={"textAlign": "center"},
         ),
-        html.Div(
-            [
-                html.Label(
-                    [
-                        "Choose data to annotate",
-                        dcc.Dropdown(
-                            id="choose-data",
-                            options=[
-                                {"label": i, "value": i} for i in os.listdir(annotate_data_dir)
-                            ],
-                            style={"width": "75%"},
-                        ),
-                    ],
-                    style={"width": "50%"},
-                ),
-                html.Label(
-                    [
-                        "Choose annotation method",
-                        dcc.Dropdown(
-                            id="choose-annotate-method",
-                            options=[
-                                {"label": "Random Sampling", "value": "random"},
-                                {"label": "Least Confidence Sampling", "value": "least",},
-                                {"label": "Margin Sampling", "value": "margin"},
-                                {"label": "Entropy Base Sampling", "value": "entropy"},
-                            ],
-                            value="random",
-                            style={"width": "75%"},
-                        ),
-                    ],
-                    style={"width": "50%"},
-                ),
-            ],
-            style={"display": "flex", "columnCount": 2, "padding": 50},
-        ),
-        html.Div(
-            [
-                html.Label('Select number of samples'),
-                dcc.Slider(
-                    id='selected-samples',
-                    min=0,
-                    max=1000,
-                    step=10,
-                    marks={i: '{}'.format(i) for i in range(1001) if i%100 == 0},
-                    value=50,
-                    updatemode='drag',
-                ),
-                html.Div(id='slider-output-container', style={"padding": 30}),
-            ],
-        ),
-        dcc.Link(
-            html.Button(children="Submit", id="submit-val", n_clicks=0),
-            href="/annotate",
-        ),
-        html.H1(id="selected-data-method"),
-    ]
-)
-
-instruction_example_tabs = html.Div(
-    [
-        html.H2(
-            children="Annotation Instructions and Examples",
-            style={"textAlign": "center", "color": colors["text"]},
-        ),
-        dcc.Tabs(id='tabs-content', value='Annotation Instructions', children=[
-            dcc.Tab(label='Annotation Instructions', value='Annotation Instructions'),
-            dcc.Tab(label='Annotation Examples', value='Annotation Examples'),
-            ]
-        ),
-        html.Div(id='instruction-example-tab'),
-        dcc.Link(
-            html.Button(children="Next", id="annotate-val", n_clicks=0),
-            href="/annotate_info",
-        ),
-    ]
-)
-
-instruction_layout = html.Div(
-    children=[
-        html.Div(
-            [
+        dbc.Card(
+            [   
                 html.Div(
                     [
-                        html.P(
-                        """In this exercise we will be labeling news into one of the below four categories.
-                        In case, news is ambigous, please choose option `Not Sure`"""
-                        ),
-                        html.Ol(
-                            [
-                                html.Li(html.B("World News")),
-                                html.Li(html.B("Sports")),
-                                html.Li(html.B("Business")),
-                                html.Li(html.B("Sci/Tech")),
-                                html.Li(html.B("Not sure")),
-                            ]
-                        ),
-                    ],
+                        html.Br(),
+                        html.Br(),
+                    ]
                 ),
-            ],
-            style={"padding": 50},
+                dbc.Row(
+                [   
+                    dbc.Col(dbc.FormGroup([dbc.Label("Choose data to annotate"), data_file_dropdown]), width={"size": 5, "order": "first", "offset": 1}),
+                    dbc.Col(dbc.FormGroup([dbc.Label("Choose annotation method"), annotation_method_dropdown]), width={"size": 5, "order": "last", "offset": 1}),
+                ],
+                justify="around"
+                ),
+                html.Div(
+                    [
+                        html.Br(),
+                        html.Br(),
+                        dbc.Label("Select number of samples"), 
+                        sample_slider, 
+                        html.Div(id="slider-output-container"),
+                    ]
+                ),
+                html.Div(
+                    [
+                        html.Br(),
+                        html.Br(),
+                        dbc.CardLink(
+                            dbc.Button("Submit", id="submit-val", n_clicks=0, color="primary", size="md", className="mr-1"),
+                            href="/annotate",
+                        ),
+                    ]
+                ),
+            ]
         ),
-    ]
+        html.H1(id="selected-data-method")
+    ],
+    className="m-4 px-2",
 )
 
-example_layout  = html.Div(
+instruction_tab_content = dbc.Card(
     children=[
-        html.Div(
+        dbc.CardBody(
+            [
+                html.P(
+                """In this exercise we will be labeling news into one of the below four categories.
+                In case, news is ambigous, please choose option `Not Sure`"""
+                ),
+                html.Ol(
+                    [
+                        html.Li(html.B("World News")),
+                        html.Li(html.B("Sports")),
+                        html.Li(html.B("Business")),
+                        html.Li(html.B("Sci/Tech")),
+                        html.Li(html.B("Not sure")),
+                    ]
+                ),
+            ],
+            className="mt-3",
+        ),
+    ],
+)
+
+example_tab_content  = dbc.Card(
+    children=[
+        dbc.CardBody(
             [
                 html.P(
                     """Examples for each of the categories are shown below:"""
@@ -131,7 +123,7 @@ example_layout  = html.Div(
                         html.B("Title: "),
                         html.P( 
                             """ White House Proposes Cuts in Salmon Areas (AP) """
-                            ),
+                        ),
                         html.B("Description: "),
                         html.P(
                             """
@@ -140,12 +132,12 @@ example_layout  = html.Div(
                             to aid the recovery of threatened or endangered salmon. 
                             Protection would focus instead on rivers where the fish now thrive.
                             """
-                            ),
+                        ),
                         html.Li(html.B("Sports News")),
                         html.B("Title: "),
                         html.P( 
                             """ Wannstedt Steps Down as Dolphins Coach """
-                            ),
+                        ),
                         html.B("Description: "),
                         html.P(
                             """
@@ -154,12 +146,12 @@ example_layout  = html.Div(
                             Defensive coordinator Jim Bates  will take over as interim coach for 
                             the remainder of the  season.
                             """
-                            ),
+                        ),
                         html.Li(html.B("Business News")),
                         html.B("Title: "),
                         html.P( 
                             """ Credit Issuers Shares Dented by Kerry Plan """
-                            ),
+                        ),
                         html.B("Description: "),
                         html.P(
                             """
@@ -167,27 +159,46 @@ example_layout  = html.Div(
                             John Kerry vowed to push for legislation that would curb credit card fees 
                             and protect homebuyers from unfair lending practices.
                             """
-                            ),
+                        ),
                         html.Li(html.B("Sci/Tech News")),
                         html.B("Title: "),
                         html.P( 
                             """ Titan on Tuesday """
-                            ),
+                        ),
                         html.B("Description: "),
                         html.P(
                             """
                             On Tuesday, October 26, the Cassini spacecraft will approach Saturn #39;s 
                             largest moon, Titan. Cassini will fly by Titan at a distance of 1,200 kilometers
-                             (745 miles) above the surface, nearly 300 times closer than the first Cassini 
-                             flyby of Titan on July 3.
+                            (745 miles) above the surface, nearly 300 times closer than the first Cassini 
+                            flyby of Titan on July 3.
                             """
-                            ),
+                        ),
                     ]
                 ),
-            ]
+            ],
+            className="mt-3",
         ),
     ]
 )
+
+instruction_example_tabs = html.Div(
+    [
+        dbc.CardHeader(
+            children="Annotation Instructions and Examples",
+            style={"textAlign": "center"},
+        ),
+        dbc.Tabs(
+            [
+                dbc.Tab(instruction_tab_content, label="Annotation Instructions", tab_id="tab-instruction"),
+                dbc.Tab(example_tab_content, label="Annotation Examples", tab_id="tab-example"),
+            ],
+            id="tabs-content",
+        ),
+        html.Div(id='instruction-example-tab'),
+    ]
+)
+
 annotation_layout = html.Div(
     [
         html.H4("Title:"),
@@ -219,3 +230,40 @@ annotation_layout = html.Div(
         ),
     ]
 )
+
+# styling the sidebar
+SIDEBAR_STYLE = {
+    "position": "fixed",
+    "top": 0,
+    "left": 0,
+    "bottom": 0,
+    "width": "16rem",
+    "padding": "2rem 1rem",
+    "background-color": "#f8f9fa",
+}
+
+# padding for the page content
+CONTENT_STYLE = {
+    "margin-left": "18rem",
+    "margin-right": "2rem",
+    "padding": "2rem 1rem",
+}
+
+sidebar = html.Div(
+    [
+        html.H4("Active Learning", className="display-6"),
+        html.Hr(),
+        dbc.Nav(
+            [
+                dbc.NavLink("Home", href="/home", active="exact"),
+                dbc.NavLink("Annotate", href="/annotate_info", active="exact"),
+                dbc.NavLink("Page 2", href="/page-2", active="exact"),
+            ],
+            vertical=True,
+            pills=True,
+        ),
+    ],
+    style=SIDEBAR_STYLE,
+)
+
+sidebar_content = html.Div(id="page-content", children=[], style=CONTENT_STYLE)
