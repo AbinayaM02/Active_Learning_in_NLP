@@ -4,6 +4,11 @@ import os
 
 import numpy as np
 import pandas as pd
+import time
+import warnings
+import sys
+
+warnings.filterwarnings("ignore")
 
 
 def get_sampling_method_map():
@@ -110,7 +115,15 @@ def get_data(annotation_data_path, sampling_method, sample_size):
     return (data, remaining_data)
 
 
-def get_annotation(data, exp_data):
+def get_countdown():
+
+    for i in range(10, 0, -1):
+        sys.stdout.write(str(i) + " ")
+        sys.stdout.flush()
+        time.sleep(1)
+
+
+def get_annotation(data, exp_data, sample_size):
     label_map = {"w": 0, "s": 1, "b": 2, "t": 3}
     label_desc_map = {
         "w": "World News examples",
@@ -121,9 +134,12 @@ def get_annotation(data, exp_data):
     data.reset_index(drop=True, inplace=True)
     data["annotated_labels"] = np.nan
     num_ex = data.shape[0]
+    clear()
     print(f"Number of examples to annotate are {num_ex}")
     full_instruction, annotation_instruction = annotation_message()
     print(full_instruction)
+    input("Press enter to start annotation >")
+    clear()
     ind = 0
     while ind < num_ex:
         if ind < 0:
@@ -136,7 +152,7 @@ def get_annotation(data, exp_data):
 
         print(annotation_instruction)
         print("*" * 100)
-        print(f"{ind + 1}")
+        print(f"{ind + 1} / {sample_size}")
         print(f"Title: {title}")
         print(f"Description: {description}")
         label = str(input("> "))
@@ -146,12 +162,34 @@ def get_annotation(data, exp_data):
         elif label == "u":
             ind -= 1 if ind > 0 else 0
         elif label in ["w", "s", "b", "t"]:
+            clear()
             exp = get_examples(exp_data, label_map.get(label, 0))
             print("*" * 100)
             print(label_desc_map.get(label, "w"))
             print(f"\n Title: {exp['Title'].values[0]}")
             print(f"\n Description: {exp['Description'].values[0]}")
             print("*" * 100)
+            print("Continue annotation [y/n]")
+            instruction = str(input(">"))
+            if instruction == "n":
+                print("saving all data and exiting in")
+                get_countdown()
+                clear()
+                # time.sleep(10)
+                return data
+            elif instruction == "y":
+                print("continuing in")
+                get_countdown()
+                clear()
+                # time.sleep(10)
+
+                continue
+            else:
+                print("invalid response, continuing annotation in")
+                get_countdown()
+                clear()
+                # time.sleep(10)
+
         elif label == "f":
             print(full_instruction)
         elif label == "save":
@@ -180,7 +218,7 @@ def main():
     output_location = args.output_location
     example_data_path = args.example_data
     if example_data_path is None:
-        example_data_path = "data/exp_data.csv.gz"
+        example_data_path = "../data/exp_data.csv.gz"
 
     df_for_annotation = pd.read_csv(annotation_data_path, index_col=False)
     df_for_annotation["sampling_method"].fillna("", inplace=True)
@@ -205,7 +243,7 @@ def main():
     data = df_for_annotation[df_for_annotation["idx"].isin(sample_idx)]
     reamining_data = df_for_annotation[~(df_for_annotation["idx"].isin(sample_idx))]
 
-    annotated_data = get_annotation(data, exp_data)
+    annotated_data = get_annotation(data, exp_data, sample_size)
     if not os.path.exists(output_location):
         os.mkdir(
             output_location,
