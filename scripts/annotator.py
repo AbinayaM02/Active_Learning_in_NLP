@@ -66,29 +66,28 @@ def annotation_message():
     annotation_instruction = (
         "Please provide input as per the instruction given in box to annotate \n"
     )
-    annotation_instruction += "-----------------------------\n"
-    annotation_instruction += "| 1: World News             | \n"
-    annotation_instruction += "| 2: Sports                 |\n"
-    annotation_instruction += "| 3: Business               |\n"
-    annotation_instruction += "| 4: Sci/Tech               |\n"
-    annotation_instruction += "| 0: Not Sure               |\n"
-    annotation_instruction += "-----------------------------\n"
-    annotation_instruction += "| save: to save the results |\n"
-    annotation_instruction += "| f: full instruction       |\n"
-    annotation_instruction += "-----------------------------\n"
+    annotation_instruction += "---------------------------------------\n"
+    annotation_instruction += "| 1: World News                        |\n"
+    annotation_instruction += "| 2: Sports                            |\n"
+    annotation_instruction += "| 3: Business                          |\n"
+    annotation_instruction += "| 4: Sci/Tech                          |\n"
+    annotation_instruction += "| 0: Not Sure                          |\n"
+    annotation_instruction += "---------------------------------------\n"
+    annotation_instruction += "| save: to save the results            |\n"
+    annotation_instruction += "| f: full instruction                  |\n"
+    annotation_instruction += "| u: go back to last text (undo)       |\n"
+    annotation_instruction += "---------------------------------------\n"
 
-    full_instruction = annotation_instruction
-    full_instruction += (
-        "Please provide input as per the instruction given in box to see examples \n"
-    )
-    full_instruction += "----------------------------------------\n"
-    full_instruction += "| u: go back to last text (undo)       |\n"
-    full_instruction += "| w: World News examples               |\n"
-    full_instruction += "| s: Sports News examples              |\n"
-    full_instruction += "| b: Business News examples            |\n"
-    full_instruction += "| t: Science/ Technology News examples |\n"
-    full_instruction += "| f: full instruction                  |\n"
-    full_instruction += "----------------------------------------\n"
+    full_instruction = "Please provide input as per the instruction given in box to see examples \n"
+    full_instruction += "---------------------------------------------\n"
+    full_instruction += "| u: go back to last text (undo)             |\n"
+    full_instruction += "| w: World News examples                     |\n"
+    full_instruction += "| s: Sports News examples                    |\n"
+    full_instruction += "| b: Business News examples                  |\n"
+    full_instruction += "| t: Science/ Technology News examples       |\n"
+    full_instruction += "| f: full instruction                        |\n"
+    full_instruction += "---------------------------------------------\n"
+    full_instruction += annotation_instruction
 
     return full_instruction, annotation_instruction
 
