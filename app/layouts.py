@@ -40,12 +40,23 @@ sample_slider = dcc.Slider(
     updatemode='drag',
 )
 
+popup_layout = html.Div(
+    [
+        dcc.ConfirmDialog(
+            id='confirm',
+            message='No file is chosen! Do you want to continue?',
+        ),
+        html.Div(id='output-confirm')
+    ]
+)
+
 tagging_layout = html.Div(
      [
         dbc.CardHeader(
             children="annotate.it",
             style={"textAlign": "center"},
         ),
+        popup_layout,
         dbc.Card(
             [   
                 html.Div(
@@ -74,11 +85,20 @@ tagging_layout = html.Div(
                     [
                         html.Br(),
                         html.Br(),
-                        dbc.CardLink(
-                            dbc.Button("Submit", id="submit-val", n_clicks=0, color="primary", size="md", className="mr-1"),
-                            href="/annotate",
-                        ),
-                    ]
+                        dbc.Row(
+                            [
+                                dbc.Col(dbc.Button("Submit", id="submit-val", n_clicks=0, 
+                                        color="primary", size="md", className="mt-auto", href="/annotate"),
+                                        width=4),
+                                # dbc.Col(dbc.Button("Cancel", id="cancel-val", n_clicks=0, 
+                                #         color="secondary", size="md", className="mt-auto", href="/annotate_info"), 
+                                #         width=4),
+                            ],
+                            justify="around",
+                        ),                      
+                    ],
+                    style={'textAlign':'center',
+                           'margin':'auto'}
                 ),
             ]
         ),
@@ -201,36 +221,89 @@ instruction_example_tabs = html.Div(
 
 annotation_layout = html.Div(
     [
-        html.H4("Title:"),
-        html.H4(
-            id="title",
+        dbc.CardHeader(
+            children="Annotate.it",
+            style={"textAlign": "center"},
         ),
-        html.P("IPL 2021"),
-        html.H4("Description:"),
-        html.P("IPL 2021 is being played in India"),
-        dcc.RadioItems(
-            id="news-class",
-            options=[
-                {"label": "World News", "value": 1},
-                {"label": "Sports", "value": 2},
-                {"label": "Business", "value": 3},
-                {"label": "Sci/Tech", "value": 4},
-                {"label": "Not Sure", "value": 0},
-            ],
-            value=0,
-            labelStyle={"display": "block"},
-        ),
-        html.Div(id="annotate-data"),
-        html.Div(
+        dbc.Card(
             [
-                dcc.Link(html.Button("Home", id="home-link", n_clicks=0), href="/home"),
-                dcc.Link(html.Button("Next", id="annotate-next", n_clicks=0), href="/annotate"),
+                dbc.CardBody(
+                    [
+                        html.H5("Text:", className="card-title"),
+                        html.P("IPL 2021 is being played in India"),
+
+                    ],
+                    id="title-body"
+                ),
+                dbc.CardBody(
+                    [
+                        dbc.Label("Please choose one of the five categories that describes the text well!", 
+                        align="start", size="md"),
+                        dbc.RadioItems(
+                            id="news-class",
+                            options=[
+                                {"label": "World News", "value": 1},
+                                {"label": "Sports", "value": 2},
+                                {"label": "Business", "value": 3},
+                                {"label": "Sci/Tech", "value": 4},
+                                {"label": "Not Sure", "value": 0},
+                            ],
+                            value=0,
+                            inline=True,
+                            style={"textAlign": "center"},
+                        ),
+                    ]
+                ),
+                html.Div(id="annotate-data"),
+                html.Br(),
+                html.Br(),
+                html.Br(),
+                html.Div(
+                    [
+                        dcc.Link(dbc.Button("Back", id="annotate-prev", n_clicks=0, color="secondary", size="md"), href="/annotate"),
+                        dcc.Link(dbc.Button("Save", id="save-link", n_clicks=0, color="primary", size="md"), href="/annotate"),
+                        dcc.Link(dbc.Button("Next", id="annotate-next", n_clicks=0, color="secondary", size="md"), href="/annotate"),
+                    ],
+                    style={"textAlign": 'center'}
+                ),
             ],
-            style={"textAlign": 'center'}
-        ),
+        ),        
     ]
 )
 
+stat_layout = html.Div(
+    [
+        dbc.CardHeader(
+            children="Annotate.it : Statistics",
+            style={"textAlign": "center"},
+        ),
+        dbc.Card(
+            [
+                dbc.CardBody(
+                    [
+                        dcc.Graph(id="stat-graph")
+                    ]
+                )
+            ]
+        ),
+    ],
+    id="stat-container"
+)
+
+report_layout = html.Div(
+    [
+        dbc.CardHeader(
+            'Active learning in NLP',
+            style={"textAlign": "center"}
+        ),
+        dbc.CardBody(
+            html.Iframe(
+                src=os.path.join("assets", "sample.pdf"),
+                style={"width": "910px", "height": "700px"}
+            ),
+        )
+    ]
+)
 # styling the sidebar
 SIDEBAR_STYLE = {
     "position": "fixed",
@@ -257,7 +330,8 @@ sidebar = html.Div(
             [
                 dbc.NavLink("Home", href="/home", active="exact"),
                 dbc.NavLink("Annotate", href="/annotate_info", active="exact"),
-                dbc.NavLink("Page 2", href="/page-2", active="exact"),
+                dbc.NavLink("Annotation Statistics", href="/annotate-stat", active="exact"),
+                dbc.NavLink("Project Report", href="/report", active="exact")
             ],
             vertical=True,
             pills=True,
