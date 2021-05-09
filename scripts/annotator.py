@@ -250,7 +250,7 @@ def main():
     annotated_data.loc[
         ~(annotated_data["annotated_labels"].isna()), "sampling_method"
     ] = sampling_method
-    tot_annotated = annotated_data[~(annotated_data.annotated_labels.isna())].shape
+    tot_annotated = annotated_data[~(annotated_data.annotated_labels.isna())].shape[0]
     clear()
     print(f"Total annotation required {sample_size}, total annotated {tot_annotated}")
     annotated_data = pd.concat((annotated_data, reamining_data), axis=0)
