@@ -11,16 +11,16 @@ Script to train simpletransformer model
 # Import necessary libraries
 import torch
 import pandas as pd
+import numpy as np
 from pathlib import Path
-from simpletransformers.classification ClasificationModel
+from simpletransformers.classification import ClassificationModel
 from scripts.config import logger
-from scripts import utils, config
+from scripts import config
 from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
 
 class NewsClassification():
 
-    def __init__():
+    def __init__(self):
         self.model_name = config.MODEL_NAME
         self.model_type = config.MODEL_TYPE
         self.train_data = pd.read_csv(Path(config.DATA_DIR, "train.csv"))
@@ -30,7 +30,7 @@ class NewsClassification():
         self.labels = config.LABELS
 
     def preprocess_data(self, data: object, column_name: str) -> object:
-       """
+        """
         Perform preprocessing on the text data
 
         Parameters
@@ -47,9 +47,12 @@ class NewsClassification():
 
         """
         if column_name == 'text':
-            return data[column_name].str.lower()
+            data[column_name] = data[column_name].str.lower()
         if column_name == 'label':
-            return data[column_name] - 1
+            data[column_name] =  data[column_name].apply(int) - 1
+        data.rename(columns={'label': 'labels'}, inplace = True)
+        logger.info(str(data.columns))
+        return data
 
     def split_data(self, data: object, random_seed: int) -> (object, object):
         """
@@ -68,11 +71,13 @@ class NewsClassification():
             train split, eval split.
 
         """
-        train_data, eval_data = train_test_split(data,
-                                                 test_size =
-                                                 config.TEST_SPLIT,
-                                                 random_state =
-                                                 random_seed)
+        np.random.seed(random_seed)
+        train_idx = np.random.choice(data.index,
+                size=int(data.shape[0]*config.TEST_SPLIT), replace=False)
+        valid_idx = set(data.index) - set(train_idx)
+
+        train_data = data[data.index.isin(train_idx)]
+        eval_data = data[data.index.isin(valid_idx)]
         return(train_data, eval_data)
 
     def train(self, train_data: object, eval_data: object) -> object:
@@ -100,8 +105,8 @@ class NewsClassification():
                                     use_cuda = self.cuda,
                                     num_labels = len(self.labels) - 1)
         # Train the model
-        model.train_model(train_df = train_df,
-                          eval_df = eval_df,
+        model.train_model(train_df = train_data,
+                          eval_df = eval_data,
                           accuracy = accuracy_score)
         return model
 
@@ -120,12 +125,12 @@ class NewsClassification():
             model.
 
         """
-         model = ClassificationModel(self.model_name,
+        model = ClassificationModel(self.model_name,
                                     model_type,
                                     args = self.model_args,
                                     use_cuda = self.cuda,
                                     num_labels = len(self.labels) - 1)
-         return model
+        return model
 
 def main():
     """
@@ -138,16 +143,21 @@ def main():
     """
     # Create classification object
     news_model = NewsClassification()
+    logger.info("News classification model instantiated")
 
     # Preprocess and split data
     data = news_model.preprocess_data(news_model.train_data, "text")
-    train_data, val_data = news_model.split_data(data, config.RANDOM_SEED)
+    logger.info("Datat is pre-processed")
+    train_data, eval_data = news_model.split_data(data, config.RANDOM_SEED)
+    logger.info("Data is split")
 
     # Train model
     train_model = news_model.train(train_data, eval_data)
+    logger.info("Model is trained")
 
     # Load model
     loaded_model = news_model.load_model(config.BEST_MODEL_SPEC_DIR)
+    logger.info("Model is loaded")
 
     # Eval model
     model_result, model_outputs, wrong_predictions = loaded_model.eval_model(eval_data,
@@ -156,6 +166,7 @@ def main():
 
     # Prediction
     predictions, raw_outputs = loaded_model.predict(news_model.test_data)
+    
 
 if __name__ == '__main__':
     main()
