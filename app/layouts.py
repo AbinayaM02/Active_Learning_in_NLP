@@ -11,18 +11,18 @@ annotate_data_dir = Path(__file__).resolve().parents[1] / "data/output/20210421"
 
 data_file_dropdown = dcc.Dropdown(
     id="choose-data",
-    options=[
-        {"label": i, "value": i} for i in os.listdir(annotate_data_dir)
-    ],
+    options=[{"label": i, "value": i} for i in os.listdir(annotate_data_dir)],
     style={"width": "75%"},
-
 )
 
 annotation_method_dropdown = dcc.Dropdown(
     id="choose-annotate-method",
     options=[
         {"label": "Random Sampling", "value": "random"},
-        {"label": "Least Confidence Sampling", "value": "least",},
+        {
+            "label": "Least Confidence Sampling",
+            "value": "least",
+        },
         {"label": "Margin Sampling", "value": "margin"},
         {"label": "Entropy Base Sampling", "value": "entropy"},
     ],
@@ -31,23 +31,23 @@ annotation_method_dropdown = dcc.Dropdown(
 )
 
 sample_slider = dcc.Slider(
-    id='selected-samples',
+    id="selected-samples",
     min=0,
     max=1000,
     step=10,
-    marks={i: '{}'.format(i) for i in range(1001) if i%100 == 0},
+    marks={i: "{}".format(i) for i in range(1001) if i % 100 == 0},
     value=50,
-    updatemode='drag',
+    updatemode="drag",
 )
 
 tagging_layout = html.Div(
-     [
+    [
         dbc.CardHeader(
             children="annotate.it",
             style={"textAlign": "center"},
         ),
         dbc.Card(
-            [   
+            [
                 html.Div(
                     [
                         html.Br(),
@@ -55,36 +55,88 @@ tagging_layout = html.Div(
                     ]
                 ),
                 dbc.Row(
-                [   
-                    dbc.Col(dbc.FormGroup([dbc.Label("Choose data to annotate"), data_file_dropdown]), width={"size": 5, "order": "first", "offset": 1}),
-                    dbc.Col(dbc.FormGroup([dbc.Label("Choose annotation method"), annotation_method_dropdown]), width={"size": 5, "order": "last", "offset": 1}),
-                ],
-                justify="around"
-                ),
-                html.Div(
                     [
-                        html.Br(),
-                        html.Br(),
-                        dbc.Label("Select number of samples"), 
-                        sample_slider, 
-                        html.Div(id="slider-output-container"),
-                    ]
-                ),
-                html.Div(
-                    [
-                        html.Br(),
-                        html.Br(),
-                        dbc.CardLink(
-                            dbc.Button("Submit", id="submit-val", n_clicks=0, color="primary", size="md", className="mr-1"),
-                            href="/annotate",
+                        dbc.Col(
+                            dbc.FormGroup(
+                                [dbc.Label("Choose data to annotate"), data_file_dropdown]
+                            ),
+                            width={"size": 5, "order": "first", "offset": 1},
                         ),
-                    ]
+                        dbc.Col(
+                            dbc.FormGroup(
+                                [dbc.Label("Choose annotation method"), annotation_method_dropdown]
+                            ),
+                            width={"size": 5, "order": "last", "offset": 1},
+                        ),
+                    ],
+                    justify="around",
                 ),
-            ]
+                html.Div(
+                    [
+                        "Choose annotation method",
+                        dcc.Dropdown(
+                            id="choose-annotate-method",
+                            options=[
+                                {"label": "Random Sampling", "value": "random"},
+                                {
+                                    "label": "Least Confidence Sampling",
+                                    "value": "least",
+                                },
+                                {"label": "Margin Sampling", "value": "margin"},
+                                {"label": "Entropy Base Sampling", "value": "entropy"},
+                            ],
+                            value="random",
+                            style={"width": "75%"},
+                        ),
+                    ],
+                    style={"width": "50%"},
+                ),
+            ],
+            style={"display": "flex", "columnCount": 2, "padding": 50},
         ),
-        html.H1(id="selected-data-method")
-    ],
-    className="m-4 px-2",
+        html.Div(
+            [
+                html.Label("Select number of samples"),
+                dcc.Slider(
+                    id="selected-samples",
+                    min=0,
+                    max=1000,
+                    step=10,
+                    marks={i: "{}".format(i) for i in range(1001) if i % 100 == 0},
+                    value=50,
+                    updatemode="drag",
+                ),
+                html.Div(id="slider-output-container", style={"padding": 30}),
+            ],
+        ),
+        dcc.Link(
+            html.Button(children="Submit", id="submit-val", n_clicks=0),
+            href="/annotate",
+        ),
+        html.H1(id="selected-data-method"),
+    ]
+)
+
+instruction_example_tabs = html.Div(
+    [
+        html.H2(
+            children="Annotation Instructions and Examples",
+            style={"textAlign": "center", "color": colors["text"]},
+        ),
+        dcc.Tabs(
+            id="tabs-content",
+            value="Annotation Instructions",
+            children=[
+                dcc.Tab(label="Annotation Instructions", value="Annotation Instructions"),
+                dcc.Tab(label="Annotation Examples", value="Annotation Examples"),
+            ],
+        ),
+        html.Div(id="instruction-example-tab"),
+        dcc.Link(
+            html.Button(children="Next", id="annotate-val", n_clicks=0),
+            href="/annotate_info",
+        ),
+    ]
 )
 
 instruction_tab_content = dbc.Card(
@@ -92,17 +144,25 @@ instruction_tab_content = dbc.Card(
         dbc.CardBody(
             [
                 html.P(
-                """In this exercise we will be labeling news into one of the below four categories.
+                    """In this exercise we will be labeling news into one of the below four categories.
                 In case, news is ambigous, please choose option `Not Sure`"""
                 ),
                 html.Ol(
                     [
-                        html.Li(html.B("World News")),
-                        html.Li(html.B("Sports")),
-                        html.Li(html.B("Business")),
-                        html.Li(html.B("Sci/Tech")),
-                        html.Li(html.B("Not sure")),
-                    ]
+                        html.P(
+                            """In this exercise we will be labeling news into one of the below four categories.
+                        In case, news is ambigous, please choose option `Not Sure`"""
+                        ),
+                        html.Ol(
+                            [
+                                html.Li(html.B("World News")),
+                                html.Li(html.B("Sports")),
+                                html.Li(html.B("Business")),
+                                html.Li(html.B("Sci/Tech")),
+                                html.Li(html.B("Not sure")),
+                            ]
+                        ),
+                    ],
                 ),
             ],
             className="mt-3",
@@ -110,20 +170,16 @@ instruction_tab_content = dbc.Card(
     ],
 )
 
-example_tab_content  = dbc.Card(
+example_layout = html.Div(
     children=[
         dbc.CardBody(
             [
-                html.P(
-                    """Examples for each of the categories are shown below:"""
-                ),
+                html.P("""Examples for each of the categories are shown below:"""),
                 html.Ol(
                     [
                         html.Li(html.B("World News")),
                         html.B("Title: "),
-                        html.P( 
-                            """ White House Proposes Cuts in Salmon Areas (AP) """
-                        ),
+                        html.P(""" White House Proposes Cuts in Salmon Areas (AP) """),
                         html.B("Description: "),
                         html.P(
                             """
@@ -135,9 +191,7 @@ example_tab_content  = dbc.Card(
                         ),
                         html.Li(html.B("Sports News")),
                         html.B("Title: "),
-                        html.P( 
-                            """ Wannstedt Steps Down as Dolphins Coach """
-                        ),
+                        html.P(""" Wannstedt Steps Down as Dolphins Coach """),
                         html.B("Description: "),
                         html.P(
                             """
@@ -149,9 +203,7 @@ example_tab_content  = dbc.Card(
                         ),
                         html.Li(html.B("Business News")),
                         html.B("Title: "),
-                        html.P( 
-                            """ Credit Issuers Shares Dented by Kerry Plan """
-                        ),
+                        html.P(""" Credit Issuers Shares Dented by Kerry Plan """),
                         html.B("Description: "),
                         html.P(
                             """
@@ -162,9 +214,7 @@ example_tab_content  = dbc.Card(
                         ),
                         html.Li(html.B("Sci/Tech News")),
                         html.B("Title: "),
-                        html.P( 
-                            """ Titan on Tuesday """
-                        ),
+                        html.P(""" Titan on Tuesday """),
                         html.B("Description: "),
                         html.P(
                             """
@@ -190,24 +240,28 @@ instruction_example_tabs = html.Div(
         ),
         dbc.Tabs(
             [
-                dbc.Tab(instruction_tab_content, label="Annotation Instructions", tab_id="tab-instruction"),
-                dbc.Tab(example_tab_content, label="Annotation Examples", tab_id="tab-example"),
+                dbc.Tab(
+                    instruction_tab_content,
+                    label="Annotation Instructions",
+                    tab_id="tab-instruction",
+                ),
+                dbc.Tab("example_tab_content", label="Annotation Examples", tab_id="tab-example"),
             ],
             id="tabs-content",
         ),
-        html.Div(id='instruction-example-tab'),
+        html.Div(id="instruction-example-tab"),
     ]
 )
 
 annotation_layout = html.Div(
     [
-        html.H4("Title:"),
-        html.H4(
-            id="title",
-        ),
-        html.P("IPL 2021"),
-        html.H4("Description:"),
-        html.P("IPL 2021 is being played in India"),
+        html.Div(id="title"),
+        # html.H4(
+        #     id="title",
+        # ),
+        # html.P("IPL 2021"),
+        html.Div(id="description"),
+        # html.P("IPL 2021 is being played in India"),
         dcc.RadioItems(
             id="news-class",
             options=[
@@ -226,7 +280,7 @@ annotation_layout = html.Div(
                 dcc.Link(html.Button("Home", id="home-link", n_clicks=0), href="/home"),
                 dcc.Link(html.Button("Next", id="annotate-next", n_clicks=0), href="/annotate"),
             ],
-            style={"textAlign": 'center'}
+            style={"textAlign": "center"},
         ),
     ]
 )

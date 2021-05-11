@@ -116,7 +116,7 @@ def get_data(annotation_data_path, sampling_method, sample_size):
 
 def get_countdown():
 
-    for i in range(10, 0, -1):
+    for i in range(5, 0, -1):
         sys.stdout.write(str(i) + " ")
         sys.stdout.flush()
         time.sleep(1)
@@ -191,6 +191,8 @@ def get_annotation(data, exp_data, sample_size):
 
         elif label == "f":
             print(full_instruction)
+            get_countdown()
+            clear()
         elif label == "save":
             print("saving all data and exiting")
             return data

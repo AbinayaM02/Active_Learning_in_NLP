@@ -3,29 +3,20 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 from app import app
-from layouts import (  # annotate_data_dir
-    annotation_layout,
-    tagging_layout,
-    instruction_example_tabs,
-    sidebar, 
-    sidebar_content)
+from layouts import annotation_layout, tagging_layout, instruction_example_tabs  # annotate_data_dir
 import callbacks
 
 # Define app layout
-app.layout = dbc.Container(
-    [
+app.layout = html.Div(
+    children=[
         dcc.Location(id="url", refresh=False),
-        #html.Div(id="page-content"),
-        sidebar,
-        sidebar_content,
-    ],
-    fluid=True
+        html.Div(id="page-content"),
+        dcc.Store(id="annotate-text"),
+    ]
 )
 
-@app.callback(
-    Output("page-content", "children"), 
-    Input("url", "pathname")
-)
+
+@app.callback(Output("page-content", "children"), Input("url", "pathname"))
 def display_page(pathname):
     if pathname == "/home":
         return instruction_example_tabs
@@ -41,5 +32,8 @@ def display_page(pathname):
         ]
     )
 
+
 if __name__ == "__main__":
-    app.run_server(debug=True, )
+    app.run_server(
+        debug=True,
+    )
