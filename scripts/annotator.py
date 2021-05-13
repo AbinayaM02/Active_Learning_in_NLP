@@ -1,12 +1,12 @@
 # from datetime import datetime
 import argparse
 import os
-
 import numpy as np
 import pandas as pd
 import time
 import warnings
 import sys
+from scripts.config import DATA_DIR
 
 warnings.filterwarnings("ignore")
 
@@ -116,7 +116,7 @@ def get_data(annotation_data_path, sampling_method, sample_size):
 
 def get_countdown():
 
-    for i in range(10, 0, -1):
+    for i in range(5, 0, -1):
         sys.stdout.write(str(i) + " ")
         sys.stdout.flush()
         time.sleep(1)
@@ -181,16 +181,16 @@ def get_annotation(data, exp_data, sample_size):
                 get_countdown()
                 clear()
                 # time.sleep(10)
-
                 continue
             else:
                 print("invalid response, continuing annotation in")
                 get_countdown()
                 clear()
                 # time.sleep(10)
-
         elif label == "f":
             print(full_instruction)
+            get_countdown()
+            clear()
         elif label == "save":
             print("saving all data and exiting")
             return data
@@ -217,7 +217,7 @@ def main():
     output_location = args.output_location
     example_data_path = args.example_data
     if example_data_path is None:
-        example_data_path = "../data/exp_data.csv.gz"
+        example_data_path = DATA_DIR / "exp_data.csv.gz"
 
     df_for_annotation = pd.read_csv(annotation_data_path, index_col=False)
     df_for_annotation["sampling_method"].fillna("", inplace=True)
