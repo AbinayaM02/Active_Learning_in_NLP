@@ -38,6 +38,7 @@ sample_slider = dcc.Slider(
     marks={i: '{}'.format(i) for i in range(1001) if i%100 == 0},
     value=50,
     updatemode='drag',
+    tooltip={'always_visible': False}
 )
 
 popup_layout = html.Div(
@@ -90,9 +91,6 @@ tagging_layout = html.Div(
                                 dbc.Col(dbc.Button("Submit", id="submit-val", n_clicks=0, 
                                         color="primary", size="md", className="mt-auto", href="/annotate"),
                                         width=4),
-                                # dbc.Col(dbc.Button("Cancel", id="cancel-val", n_clicks=0, 
-                                #         color="secondary", size="md", className="mt-auto", href="/annotate_info"), 
-                                #         width=4),
                             ],
                             justify="around",
                         ),                      
@@ -229,11 +227,19 @@ annotation_layout = html.Div(
             [
                 dbc.CardBody(
                     [
-                        html.H5("Text:", className="card-title"),
+                        html.H5("Title:\n", className="card-title"),
                         html.P("IPL 2021 is being played in India"),
 
                     ],
                     id="title-body"
+                ),
+                dbc.CardBody(
+                    [
+                        html.H5("Description:\n", className="card-title"),
+                        html.P("IPL 2021 is being played in India"),
+
+                    ],
+                    id="description-body"
                 ),
                 dbc.CardBody(
                     [

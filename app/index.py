@@ -3,7 +3,7 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 from app import app
-from layouts import (  # annotate_data_dir
+from layouts import (
     annotation_layout,
     tagging_layout,
     report_layout,
@@ -20,6 +20,7 @@ app.layout = dbc.Container(
         #html.Div(id="page-content")
         sidebar,
         sidebar_content,
+        dcc.Store(id="annotate-text", storage_type="local")
     ],
     fluid=True
 )
