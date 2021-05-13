@@ -3,7 +3,6 @@ pandas==1.2.3
 pytest==6.2.3
 scikit-learn==0.24.1
 simpletransformers==0.61.4
-streamlit==0.80.0
 torch==1.8.1
 wandb==0.10.25
 pytest-cov==2.11.1
@@ -11,3 +10,4 @@ black==21.5b1
 isort==5.8.0
 flake8==3.9.2
 pre-commit==2.12.1
+dash==1.20.0
