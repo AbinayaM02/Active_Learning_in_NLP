@@ -9,10 +9,10 @@ Script to download ag_news dataset
 
 from pathlib import Path
 
+from config import DATA_DIR, logger
+
 # Import necessary libraries
 from datasets import load_dataset
-
-from config import DATA_DIR, logger
 
 
 # Load data and convert it to dataframe

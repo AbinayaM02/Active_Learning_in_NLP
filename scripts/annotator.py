@@ -1,11 +1,13 @@
 # from datetime import datetime
 import argparse
 import os
-import numpy as np
-import pandas as pd
+import sys
 import time
 import warnings
-import sys
+
+import numpy as np
+import pandas as pd
+
 from scripts.config import DATA_DIR
 
 warnings.filterwarnings("ignore")

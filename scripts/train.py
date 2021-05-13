@@ -8,16 +8,19 @@ Script to train simpletransformer model
 """
 
 
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+
 # Import necessary libraries
 import torch
 import torch.nn as nn
-import pandas as pd
-import numpy as np
-from pathlib import Path
 from simpletransformers.classification import ClassificationModel
-from scripts.config import logger
-from scripts import config
 from sklearn.metrics import accuracy_score
+
+from scripts import config
+from scripts.config import logger
 
 
 class NewsClassification:
@@ -163,10 +166,10 @@ class NewsClassification:
 
         # Reshape the data
         annotate_df_with_pred = np.hstack(
-            annotate_df.idx.values.reshape(-1, 1),
-            annotate_df.Title.values.reshape(-1, 1),
-            annotate_df.Description.values.reshape(-1, 1),
-            annotate_df.text.values.reshape(-1, 1),
+            predictions.idx.values.reshape(-1, 1),
+            predictions.Title.values.reshape(-1, 1),
+            predictions.Description.values.reshape(-1, 1),
+            predictions.text.values.reshape(-1, 1),
             raw_output,
             annotate_class_prob,
             max_prob.reshape(-1, 1),
@@ -215,10 +218,10 @@ def main():
     logger.info("Data is split")
 
     # Train model
-    train_model = news_model.train(train_data, eval_data)
+    _ = news_model.train(train_data, eval_data)
     logger.info("Model is trained")
 
-    # Load model
+    # Load model from the best model directory
     loaded_model = news_model.load_model(config.BEST_MODEL_SPEC_DIR)
     logger.info("Model is loaded")
 
@@ -233,7 +236,7 @@ def main():
     logger.info("Predictions completed")
 
     # Format output
-    annotate_data = news_model.format_output(predictions, raw_output)
+    annotate_data = news_model.format_output(predictions, raw_outputs)
     annotate_data.to_csv(config.DATA_DIR + "annotate_data.csv")
 
 
