@@ -6,3 +6,9 @@ simpletransformers==0.61.4
 streamlit==0.80.0
 torch==1.8.1
 wandb==0.10.25
+pytest-cov==2.11.1
+black==21.5b1
+isort==5.8.0
+flake8==3.9.2
+pre-commit==2.12.1
+
