@@ -11,7 +11,7 @@ from layouts import (
     stat_layout,
     tagging_layout,
 )
-
+import callbacks
 from app import app
 
 # Define app layout
