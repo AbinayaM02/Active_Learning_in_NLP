@@ -50,12 +50,12 @@ class NewsClassification:
             pre-processed dataframe.
 
         """
+        data.rename(columns={"Unnamed: 0": "idx"}, inplace=True)
         if column_name == "text":
             data[column_name] = data[column_name].str.lower()
         if column_name == "label":
             data[column_name] = data[column_name].apply(int) - 1
         data.rename(columns={"label": "labels"}, inplace=True)
-        logger.info(str(data.columns))
         return data
 
     def split_data(self, data: object, random_seed: int) -> (object, object):
@@ -165,34 +165,13 @@ class NewsClassification:
         max_prob = max_prob.values.numpy()
 
         # Reshape the data
-        annotate_df_with_pred = np.hstack(
-            predictions.idx.values.reshape(-1, 1),
-            predictions.Title.values.reshape(-1, 1),
-            predictions.Description.values.reshape(-1, 1),
-            predictions.text.values.reshape(-1, 1),
-            raw_output,
-            annotate_class_prob,
-            max_prob.reshape(-1, 1),
-            np.array(predictions).reshape(-1, 1),
+        annotate_df_with_pred = self.test_data
+        probabilities = pd.DataFrame(
+            annotate_class_prob, columns=["prob_0", "prob_1", "prob_2", "prob_3"]
         )
-        # Column names
-        col_names = [
-            "idx",
-            "text",
-            "title",
-            "description",
-            "logit_0",
-            "logit_1",
-            "logit_2",
-            "logit_3",
-            "prob_0",
-            "prob_1",
-            "prob_2",
-            "prob_3",
-            "max_prob",
-            "label_pred",
-        ]
-        annotate_df_with_pred = pd.DataFrame(annotate_df_with_pred, columns=col_names)
+        annotate_df_with_pred = pd.concat([annotate_df_with_pred, probabilities], axis=1)
+        annotate_df_with_pred["max_prob"] = max_prob
+        annotate_df_with_pred["label_pred"] = predictions
         annotate_df_with_pred["annotated_labels"] = ""
         annotate_df_with_pred["sampling_method"] = ""
         return annotate_df_with_pred
@@ -213,12 +192,12 @@ def main():
 
     # Preprocess and split data
     data = news_model.preprocess_data(news_model.train_data, "text")
-    logger.info("Datat is pre-processed")
+    logger.info("Train data is pre-processed")
     train_data, eval_data = news_model.split_data(data, config.RANDOM_SEED)
     logger.info("Data is split")
 
     # Train model
-    _ = news_model.train(train_data, eval_data)
+    # train_model = news_model.train(train_data, eval_data)
     logger.info("Model is trained")
 
     # Load model from the best model directory
@@ -229,15 +208,16 @@ def main():
     model_result, model_outputs, wrong_predictions = loaded_model.eval_model(
         eval_data, accuracy=accuracy_score
     )
-    logger.info("Model is trained")
+    logger.info("Model is evaluated")
 
     # Prediction
-    predictions, raw_outputs = loaded_model.predict(news_model.test_data)
+    news_model.test_data = news_model.preprocess_data(news_model.test_data, "text")
+    predictions, raw_outputs = loaded_model.predict(news_model.test_data.text.values.tolist())
     logger.info("Predictions completed")
 
     # Format output
     annotate_data = news_model.format_output(predictions, raw_outputs)
-    annotate_data.to_csv(config.DATA_DIR + "annotate_data.csv")
+    annotate_data.to_csv(Path(config.DATA_DIR, "annotate_data.csv"))
 
 
 if __name__ == "__main__":

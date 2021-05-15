@@ -55,7 +55,7 @@ def save_data(path: str, dataframe: object) -> None:
         None.
 
     """
-    dataframe.to_csv(path, index=False)
+    dataframe.to_csv(path)
     logger.info("dataset saved!")
 
 

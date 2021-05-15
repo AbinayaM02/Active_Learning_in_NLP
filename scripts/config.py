@@ -97,7 +97,7 @@ WANDB_PROJ_AL_BASELINE = "model_al_baseline"
 WANDB_PROJ_AL_EXP = "model_al_experiments"
 
 # Model args for the simpletransformer model
-# Add or modify parameters bases on experiment
+# Add or modify parameters based on experiment
 BEST_MODEL_SPEC_DIR = str(BEST_MODEL_DIR).format(WANDB_PROJ_AL_EXP)
 MODEL_ARGS = ClassificationArgs(
     num_train_epochs=5,
@@ -107,12 +107,12 @@ MODEL_ARGS = ClassificationArgs(
     # modify based on the experiment
     wandb_project=WANDB_PROJ_AL_EXP,
     best_model_dir=BEST_MODEL_SPEC_DIR,
-    cache_dir=CACHE_DIR,
+    cache_dir=str(CACHE_DIR),
     eval_batch_size=16,
     evaluate_during_training=True,
     evaluate_during_training_verbose=True,
     manual_seed=100,
-    output_dir=OUTPUT_DIR,
+    output_dir=str(OUTPUT_DIR),
     use_early_stopping=True,
     early_stopping_patience=3,
     reprocess_input_data=True,
