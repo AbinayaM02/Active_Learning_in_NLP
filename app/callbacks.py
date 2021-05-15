@@ -78,8 +78,7 @@ def render_content(tab):
 )
 def sample_data(n_clicks_next, n_clicks_back, news_type, df_json):
     df = pd.DataFrame.from_dict(json.loads(df_json))
-    print(n_clicks_next)
-    if n_clicks_back == 0 and n_clicks_next == 0:
+    if n_clicks_back <= 0 or n_clicks_next <= 0:
         df_index = df["idx"].values[0]
         title = df["text"].values[0]
         description = df["title"].values[0]
@@ -87,11 +86,13 @@ def sample_data(n_clicks_next, n_clicks_back, news_type, df_json):
         df_index = df["idx"].values[n_clicks_next]
         title = df["text"].values[n_clicks_next]
         description = df["title"].values[n_clicks_next]
-    elif n_clicks_back:
-        df_index = df["idx"].values[n_clicks_next - 1]
-        title = df["text"].values[n_clicks_next - 1]
-        description = df["title"].values[n_clicks_next - 1]
+    if n_clicks_back:
+        n_clicks_next = n_clicks_next - 1
+        df_index = df["idx"].values[n_clicks_next]
+        title = df["text"].values[n_clicks_next]
+        description = df["title"].values[n_clicks_next]
     df.loc[df["idx"] == df_index, "annotated_labels"]= news_type - 1
+    print(n_clicks_next, n_clicks_back)
     print(df)
     return [f"Title:\n {title}", f"Description:\n {description}"]
 
