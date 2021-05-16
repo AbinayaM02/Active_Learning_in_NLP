@@ -63,6 +63,22 @@ To run the GUI tool, use the following command
 python app/index.py
 ```
 
+## Train model
+
+To train the model on the news corpus (by directly downloading it from HuggingFace Datasets), do the following
+```
+python scripts/download_data.py
+python scripts/train.py
+```
+If you've downloaded the data from the Kaggle competition, then use the following commands,
+```
+# To prepare the data
+python scripts/data.py
+
+# To train the model
+jupyter notebook
+```
+
 ## Running Tests
 
 To run tests, run the following command
