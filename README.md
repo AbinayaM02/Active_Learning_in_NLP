@@ -1,160 +1,112 @@
 
 # Active Learning in NLP
 
-The aim of this project is to identify if active learning can help in building better language models with less good quality data.
-
-The project is undertaken as part of the Full Stack Deep Learning Course, 2021.
+The aim of this project is to identify if active learning can help in building better models with less good quality data in the NLP domain.
+The project is undertaken as part of the Full Stack Deep Learning Course, 2021. The code is not production ready yet and it is in experimental stage.
 
 ## Initial Plan
 The initial plan is to build an end-to-end project that contains the following components,
-
 - Active learning (using custom code or available library)
-- Multi-class classification model using Transformer
+- Multi-class classification model using Transformers
+- Experiment tracking using MLflow or wandb
 - Labeling using labelstudio
-- App using streamlit
-- Explainability for NLP models
+- App using streamlit/Dash
+- Explainability for NLP models - stretch goal
 - Unit testing using pytest/unittest
 - CI/CD using Github Actions
 
 ## Components completed
-[To be added]
-## API Reference
+Currently, the following components are present (some of which are still in not 100% complete),
+- Active learning is performed using uncertainity based sampling (random, least confidence, entropy based)
+- Multi-class classification of news articles is done using Simpletransformers library
+- Experiments are tracked using wandb
+- CLI based annotation tool
+- GUI based Dash app for annotation (functionalities are not completed yet)
+- Pytest and coverage (doesn't cover all the code yet)
+- CI/CD using Github Actions (in progress)
+- Explainability of NLP models (will be done in the future)
+- Expose API using FastAPI/Flask (will be done in the future)
 
-#### Get all items
-
-```http
-  GET /api/items
-```
-
-| Parameter | Type     | Description                |
-| :-------- | :------- | :------------------------- |
-| `api_key` | `string` | **Required**. Your API key |
-
-#### Get item
-
-```http
-  GET /api/items/${id}
-```
-
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `id`      | `string` | **Required**. Id of item to fetch |
-
-#### add(num1, num2)
-
-Takes two numbers and returns the sum.
-
-
-## Authors and Acknowledgement
-
-- [@katherinepeterson](https://www.github.com/katherinepeterson) for development and design of README.so.
-
-
-## Appendix
-
-Any additional information goes here
-
+## Authors
+- [@AbinayaM02](https://github.com/AbinayaM02)
+- [@datafool](https://github.com/datafool)
 
 ## Demo
 
-Insert gif or link to demo
-
-
-## Deployment
-
-To deploy this project run
-
-```bash
-  npm run deploy
-```
-
+Insert gif or link to demo (will be provided later)
 
 ## Documentation
 
-[Documentation](https://linktodocumentation)
+[Documentation] (will be updated later)
 
 
 ## Environment Variables
 
-To run this project, you will need to add the following environment variables to your .env file
+To run this project, you will need to add the following path to your environment variable,
+``` 
+export PYTHONPATH="${PYTHONPATH}:<path_to_the_project_root_dir>
+```
+## Running the CLI tool
 
-`API_KEY`
-
-`ANOTHER_API_KEY`
-
-
-## FAQ
-
-#### Question 1
-
-Answer 1
-
-#### Question 2
-
-Answer 2
-
-
-## Features
-
-- Light/dark mode toggle
-- Live previews
-- Fullscreen mode
-- Cross platform
-
-
-## Feedback
-
-If you have any feedback, please reach out to us at fake@fake.com
-
-
-## Installation
-
-Install my-project with npm
-
-```bash
-  npm install my-project
-  cd my-project
+To run the CLI tool, use the following command
+```
+python scripts/annotator.py <path_to_data_to_be_annotated> \
+                                <sampling_method> \
+                                <no_of_samples>  \
+                                <path_to_store_the annotated_data>
 ```
 
-## Lessons Learned
+## Running the GUI annotation tool
 
-What did you learn while building this project? What challenges did you face and how did you overcome them?
-
-
-## Roadmap
-
-- Additional browser support
-
-- Add more integrations
-
-
-## Screenshots
-
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
-
+To run the GUI tool, use the following command
+``` 
+python app/index.py
+```
 
 ## Running Tests
 
 To run tests, run the following command
-
-```bash
-  npm run test
+```
+make test
 ```
 
+## Running Styling
 
-## Usage/Examples
-
-```javascript
-import Component from 'my-project'
-
-function App() {
-  return <Component />
-}
+To run the styling on this project, use the following command
+```
+make style
 ```
 
+## Roadmap
+- Fix the issues with annotation app (Dash)
+- Add testcases for all the modules
+- Add features to train and inference using Dash app
+- Fix Github Actions
+- Dockerize the application
+- Add documentation
+
+
+## Screenshots 
+
+### CLI
+![CLI tool](https://user-images.githubusercontent.com/28945722/118386233-ad2e1d80-b633-11eb-8b1a-326c03e398b8.png)
+
+### Dash Tool
+![Dash : Home](https://user-images.githubusercontent.com/28945722/118368098-fabc7300-b5be-11eb-8774-da6dcceab501.png)
+![Dash : Annotation details](https://user-images.githubusercontent.com/28945722/118368130-20e21300-b5bf-11eb-893e-756693583463.png)
+![Dash : Annotation](https://user-images.githubusercontent.com/28945722/118386173-2e38e500-b633-11eb-90e9-7a2453b448e8.png)
+
+
+## Acknowledgement
+
+- [@katherinepeterson](https://www.github.com/katherinepeterson) for development and design of README.so.
+- [@GokuMohandas](https://github.com/GokuMohandas) for the course on MLOps (https://github.com/GokuMohandas/MadeWithML).
 
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
 
 
+## Appendix
+
+Any additional information goes here
