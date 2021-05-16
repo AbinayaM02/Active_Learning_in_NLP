@@ -43,12 +43,14 @@ Insert gif or link to demo (will be provided later)
 ## Environment Variables
 
 To run this project, you will need to add the following path to your environment variable,
-``` export PYTHONPATH="${PYTHONPATH}:<path_to_the_project_root_dir>
+``` 
+export PYTHONPATH="${PYTHONPATH}:<path_to_the_project_root_dir>
 ```
 ## Running the CLI tool
 
 To run the CLI tool, use the following command
-```python scripts/annotator.py <path_to_data_to_be_annotated> \
+```
+python scripts/annotator.py <path_to_data_to_be_annotated> \
                                 <sampling_method> \
                                 <no_of_samples>  \
                                 <path_to_store_the annotated_data>
@@ -57,19 +59,22 @@ To run the CLI tool, use the following command
 ## Running the GUI annotation tool
 
 To run the GUI tool, use the following command
-``` python app/index.py
+``` 
+python app/index.py
 ```
 
 ## Running Tests
 
 To run tests, run the following command
-```make test
+```
+make test
 ```
 
 ## Running Styling
 
 To run the styling on this project, use the following command
-```make style
+```
+make style
 ```
 
 ## Roadmap
